@@ -1,7 +1,6 @@
 ###################
 # BUILD FOR LOCAL DEVELOPMENT
 ###################
-
 FROM node:22 AS development
 
 # Create app directory
@@ -24,7 +23,6 @@ USER node
 ###################
 # BUILD FOR PRODUCTION
 ###################
-
 FROM node:22 AS build
 
 WORKDIR /usr/src/app
@@ -52,17 +50,12 @@ USER node
 ###################
 # PRODUCTION
 ###################
-
 FROM node:22 AS production
 
 # Copy the bundled code from the build stage to the production image
 COPY --chown=node:node --from=build /usr/src/app/node_modules ./node_modules
 COPY --chown=node:node --from=build /usr/src/app/dist ./dist
 COPY --chown=node:node --from=build /usr/src/app/ecosystem.config.js ./ecosystem.config.js
-
-# Copy the start.sh script to the container
-COPY --chown=node:node ./start.sh .
-RUN chmod +x ./start.sh
 
 # Set NODE_ENV environment variable
 ENV NODE_ENV production
@@ -71,4 +64,4 @@ ENV NODE_ENV production
 EXPOSE 8080
 
 # Run migrations and start the server using start.sh script
-CMD ["./start.sh"]
+CMD ["node", "dist/main.js"]
