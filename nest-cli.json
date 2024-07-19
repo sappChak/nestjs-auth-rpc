@@ -28,24 +28,6 @@
         "tsConfigPath": "apps/auth/tsconfig.app.json"
       }
     },
-    "posts": {
-      "type": "application",
-      "root": "apps/posts",
-      "entryFile": "main",
-      "sourceRoot": "apps/posts/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/posts/tsconfig.app.json"
-      }
-    },
-    "mailing": {
-      "type": "application",
-      "root": "apps/mailing",
-      "entryFile": "main",
-      "sourceRoot": "apps/mailing/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/mailing/tsconfig.app.json"
-      }
-    },
     "user": {
       "type": "application",
       "root": "apps/user",
@@ -53,6 +35,15 @@
       "sourceRoot": "apps/user/src",
       "compilerOptions": {
         "tsConfigPath": "apps/user/tsconfig.app.json"
+      }
+    },
+    "token": {
+      "type": "application",
+      "root": "apps/token",
+      "entryFile": "main",
+      "sourceRoot": "apps/token/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/token/tsconfig.app.json"
       }
     }
   }
