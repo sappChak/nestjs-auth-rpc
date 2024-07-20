@@ -31,10 +31,7 @@ export class AuthService {
     credentials: AuthCredentialsDto,
   ): Promise<AuthResponseDto> {
     const existingUser = await firstValueFrom(
-      this.userClient.send(
-        { cmd: 'get-user-by-email' },
-        { email: credentials.email },
-      ),
+      this.userClient.send({ cmd: 'get-user-by-email' }, credentials.email),
     );
 
     if (existingUser) {
@@ -91,10 +88,7 @@ export class AuthService {
 
   private async validateUser(credentials: AuthCredentialsDto) {
     const user = await firstValueFrom(
-      this.userClient.send(
-        { cmd: 'get-user-by-email' },
-        { email: credentials.email },
-      ),
+      this.userClient.send({ cmd: 'get-user-by-email' }, credentials.email),
     );
     if (!user) {
       throw new UnauthorizedException('User not found');

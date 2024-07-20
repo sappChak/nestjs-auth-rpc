@@ -23,7 +23,7 @@ export class UserController {
 
   @MessagePattern({ cmd: 'get-user-by-email' })
   public async getUserByEmail(
-    @Payload() email: any,
+    @Payload() email: string,
     @Ctx() context: RmqContext,
   ): Promise<User> {
     this.logger.debug('User email: ', email);
