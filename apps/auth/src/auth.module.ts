@@ -21,8 +21,4 @@ import { TOKEN_SERVICE, USER_SERVICE } from './constants/constants';
   controllers: [AuthController],
   providers: [AuthService],
 })
-export class AuthModule {
-  public constructor(){
-    console.log('Hello there', USER_SERVICE)
-  }
-}
+export class AuthModule { }

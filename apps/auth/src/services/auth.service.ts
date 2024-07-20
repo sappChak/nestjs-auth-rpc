@@ -16,9 +16,7 @@ export class AuthService {
   public constructor(
     @Inject(TOKEN_SERVICE) private readonly tokenClient: ClientProxy,
     @Inject(USER_SERVICE) private readonly userClient: ClientProxy,
-  ) {
-    console.log(tokenClient, userClient);
-  }
+  ) { }
 
   public async login(
     credentials: AuthCredentialsDto,
