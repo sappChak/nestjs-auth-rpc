@@ -1,14 +1,75 @@
+version: '3.8'
+
 services:
+  user:
+    build:
+      dockerfile: ./apps/user/Dockerfile
+      context: .
+      target: development
+    command: npm run start:dev user
+    env_file:
+      - ./apps/user/.env
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      postgres:
+        condition: service_started
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - '3001:3001'
+
+  token:
+    build:
+      dockerfile: ./apps/token/Dockerfile
+      context: .
+      target: development
+    command: npm run start:dev token
+    env_file:
+      - ./apps/token/.env
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      postgres:
+        condition: service_started
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - '3002:3002'
+
+  auth:
+    build:
+      context: .
+      dockerfile: ./apps/auth/Dockerfile
+      target: development
+    command: npm run start:dev auth
+    env_file:
+      - ./apps/auth/.env
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      user:
+        condition: service_started
+      token:
+        condition: service_started
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - '3000:3000'
+
   postgres:
     image: postgres:latest
     container_name: postgres
     restart: always
     ports:
       - '5432:5432'
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
     env_file:
       - .development.env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
   pgadmin:
     image: dpage/pgadmin4
@@ -19,33 +80,24 @@ services:
     environment:
       - PGADMIN_DEFAULT_EMAIL=admin@admin.com
       - PGADMIN_DEFAULT_PASSWORD=pgadmin4
+      - PGADMIN_LOG_LEVEL=ERROR
     user: '$UID:$GID'
     env_file:
       - .development.env
     depends_on:
-      - postgres
+      postgres:
+        condition: service_started
 
   rabbitmq:
     image: rabbitmq
     ports:
       - '5672:5672'
-
-  user:
-    build:
-      dockerfile: ./apps/user/Dockerfile
-      context: .
-      target: development
-    command: npm run start:dev user
-    env_file:
-      - ./apps/user/.env
-    depends_on:
-      - postgres
-      - rabbitmq
-    volumes:
-      - .:/usr/src/app
-      - /usr/src/app/node_modules
-    ports:
-      - '3000:3000'
+    healthcheck:
+      test: ['CMD', 'rabbitmq-diagnostics', 'ping']
+      interval: 10s
+      retries: 5
+      start_period: 20s
+      timeout: 5s
 
 networks:
   default:
