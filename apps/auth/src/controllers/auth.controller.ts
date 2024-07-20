@@ -22,8 +22,8 @@ import { AuthResponseDto } from '../dto/auth-response.dto';
 export class AuthController {
   public constructor(private readonly authService: AuthService) { }
 
-  @HttpCode(HttpStatus.OK)
   @Post('/login')
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Login' })
   @ApiBody({ type: AuthCredentialsDto, description: 'Login credentials' })
   @ApiResponse({
@@ -37,8 +37,8 @@ export class AuthController {
     return await this.authService.login(credentials);
   }
 
-  @HttpCode(HttpStatus.CREATED)
   @Post('/register')
+  @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Register' })
   @ApiBody({ type: AuthCredentialsDto, description: 'Registration data' })
   @ApiResponse({
@@ -52,9 +52,9 @@ export class AuthController {
     return await this.authService.register(credentials);
   }
 
+  @Post('/logout')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Logout' })
-  @Post('/logout')
   public async logout(
     @Req() request: Request,
     @Res({ passthrough: true }) response: Response,
@@ -65,14 +65,14 @@ export class AuthController {
     return { message: 'Logout successful' };
   }
 
+  @Get('/refresh')
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Refresh token' })
   @ApiResponse({
     status: 200,
     description: 'Token refreshed.',
     type: AuthResponseDto,
   })
-  @HttpCode(HttpStatus.OK)
-  @Get('/refresh')
   public async refresh(@Req() request: Request): Promise<AuthResponseDto> {
     const refreshToken = request.cookies.refreshToken;
     return await this.authService.refresh(refreshToken);
