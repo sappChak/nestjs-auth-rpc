@@ -59,5 +59,4 @@ COPY --chown=node:node --from=build /usr/src/app/dist ./dist
 # Set NODE_ENV environment variable
 ENV NODE_ENV production
 
-CMD ["node", "dist/apps/user/main"]
-
+CMD ["node", "dist/apps/token/main"]
