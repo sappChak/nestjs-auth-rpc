@@ -12,9 +12,9 @@ import { CreateTokenDto } from '../dto/create-tokens.dto';
 export class TokenController {
   private readonly logger = new Logger(TokenController.name);
 
-  public constructor(private readonly tokenService: TokenService) {}
+  public constructor(private readonly tokenService: TokenService) { }
 
-  @MessagePattern({ cmd: 'generate-access-token' })
+  @MessagePattern('generate-access-token')
   public async handleAccessTokenGeneration(
     @Payload() data: CreateTokenDto,
     @Ctx() context: RmqContext,
@@ -26,7 +26,7 @@ export class TokenController {
     );
   }
 
-  @MessagePattern({ cmd: 'generate-refresh-token' })
+  @MessagePattern('generate-refresh-token')
   public async handleRefreshTokenGeneration(
     @Payload() data: CreateTokenDto,
     @Ctx() context: RmqContext,
@@ -38,7 +38,7 @@ export class TokenController {
     );
   }
 
-  @MessagePattern({ cmd: 'user-created' })
+  @MessagePattern('user-created')
   public async handleUserCreated(
     @Payload() data: CreateTokenDto,
     @Ctx() context: RmqContext,

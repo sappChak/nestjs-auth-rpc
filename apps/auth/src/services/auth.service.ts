@@ -79,12 +79,7 @@ export class AuthService {
 
   private async generateAuthResponse(user: any) {
     const { accessToken, refreshToken } = await firstValueFrom(
-      this.tokenClient.send(
-        {
-          cmd: 'user-created',
-        },
-        user,
-      ),
+      this.tokenClient.send('user-created', user),
     );
 
     return { accessToken, refreshToken, user };
@@ -92,10 +87,7 @@ export class AuthService {
 
   private async validateUser(credentials: AuthCredentialsDto) {
     const user = await firstValueFrom(
-      this.userClient.send(
-        { cmd: 'get-user-by-email' },
-        { email: credentials.email },
-      ),
+      this.userClient.send('get-user-by-email', { email: credentials.email }),
     );
     if (!user) {
       throw new UnauthorizedException('User not found');
