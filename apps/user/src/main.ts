@@ -8,7 +8,7 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(UserModule);
 
   const rmqService = app.get<RmqService>(RmqService);
-  app.connectMicroservice<MicroserviceOptions>(rmqService.getOptions('USERS'));
+  app.connectMicroservice<MicroserviceOptions>(rmqService.getOptions('USER'));
 
   app.startAllMicroservices();
 }
