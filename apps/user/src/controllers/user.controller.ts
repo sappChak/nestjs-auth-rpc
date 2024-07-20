@@ -21,7 +21,7 @@ export class UserController {
     private readonly rmqService: RmqService,
   ) { }
 
-  @MessagePattern('get-user-by-email')
+  @MessagePattern({ cmd: 'get-user-by-email' })
   public async getUserByEmail(
     @Payload() email: any,
     @Ctx() context: RmqContext,
@@ -32,7 +32,7 @@ export class UserController {
     return user;
   }
 
-  @MessagePattern('create-user')
+  @MessagePattern({ cmd: 'create-user' })
   public async createUser(
     @Payload() user: CreateUserDto,
     @Ctx() context: RmqContext,

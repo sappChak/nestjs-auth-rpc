@@ -4,6 +4,7 @@ import {
   Ctx,
   RmqContext,
   MessagePattern,
+  EventPattern,
 } from '@nestjs/microservices';
 import { TokenService } from '../services/token.service';
 import { CreateTokenDto } from '../dto/create-tokens.dto';
@@ -14,32 +15,55 @@ export class TokenController {
 
   public constructor(private readonly tokenService: TokenService) { }
 
-  @MessagePattern('generate-access-token')
-  public async handleAccessTokenGeneration(
-    @Payload() data: CreateTokenDto,
+  @MessagePattern({ cmd: 'verify-refresh-token' })
+  public async handleRefreshTokenVerification(
+    @Payload() token: string,
     @Ctx() context: RmqContext,
   ) {
-    return this.handleTokenGeneration(
-      data,
-      context,
-      this.tokenService.generateAccessToken,
-    );
+    const channel = context.getChannelRef();
+    const originalMsg = context.getMessage();
+
+    try {
+      this.logger.debug(`verify-refresh-token event received: ${token}`);
+
+      const user = await this.tokenService.verifyRefreshToken(token);
+
+      this.logger.debug(`Refresh token verified for user with id: ${user.id}`);
+
+      channel.ack(originalMsg);
+
+      return user;
+    } catch (error) {
+      this.logger.error(
+        `Failed to verify refresh token: ${token}`,
+        error.stack,
+      );
+      channel.nack(originalMsg);
+    }
   }
 
-  @MessagePattern('generate-refresh-token')
-  public async handleRefreshTokenGeneration(
-    @Payload() data: CreateTokenDto,
-    @Ctx() context: RmqContext,
-  ) {
-    return this.handleTokenGeneration(
-      data,
-      context,
-      this.tokenService.generateRefreshToken,
-    );
+  @EventPattern('user-logged-out')
+  public async handleUserLoggedOut(data: { refreshToken: string }) {
+    try {
+      this.logger.debug(
+        `user-logged-out event received: ${JSON.stringify(data)}`,
+      );
+
+      await this.tokenService.revokeRefreshToken(data.refreshToken);
+
+      this.logger.debug(
+        `Refresh token deleted for user with id: ${data.refreshToken}`,
+      );
+    } catch (error) {
+      this.logger.error(
+        `Failed to delete refresh token for user with id: ${data.refreshToken}`,
+        error.stack,
+      );
+    }
   }
 
-  @MessagePattern('user-created')
-  public async handleUserCreated(
+  @MessagePattern({ cmd: 'generate-tokens' })
+  public async handleTokensGeneration(
     @Payload() data: CreateTokenDto,
     @Ctx() context: RmqContext,
   ) {
@@ -64,31 +88,6 @@ export class TokenController {
         `Failed to generate tokens for user with id: ${data.id}`,
         error.stack,
       );
-      channel.nack(originalMsg);
-    }
-  }
-
-  private async handleTokenGeneration(
-    data: CreateTokenDto,
-    context: RmqContext,
-    tokenGenerationMethod: (data: CreateTokenDto) => Promise<string>,
-  ) {
-    const channel = context.getChannelRef();
-    const originalMsg = context.getMessage();
-
-    try {
-      this.logger.debug(
-        `Token generation event received: ${JSON.stringify(data)}`,
-      );
-
-      const token = await tokenGenerationMethod(data);
-
-      this.logger.debug(`Generated token for user with id: ${data.id}`);
-
-      channel.ack(originalMsg);
-
-      return token;
-    } catch (error) {
       channel.nack(originalMsg);
     }
   }

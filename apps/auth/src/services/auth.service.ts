@@ -31,7 +31,10 @@ export class AuthService {
     credentials: AuthCredentialsDto,
   ): Promise<AuthResponseDto> {
     const existingUser = await firstValueFrom(
-      this.userClient.send('get-user-by-email', { email: credentials.email }),
+      this.userClient.send(
+        { cmd: 'get-user-by-email' },
+        { email: credentials.email },
+      ),
     );
 
     if (existingUser) {
@@ -41,10 +44,13 @@ export class AuthService {
     const encryptedPassword = await bcrypt.hash(credentials.password, 10);
 
     const user = await firstValueFrom(
-      this.userClient.send('create-user', {
-        ...credentials,
-        password: encryptedPassword,
-      }),
+      this.userClient.send(
+        { cmd: 'create-user' },
+        {
+          ...credentials,
+          password: encryptedPassword,
+        },
+      ),
     );
 
     const { password, ...userWithoutPassword } = user;
@@ -58,7 +64,7 @@ export class AuthService {
     }
 
     const userPayload = await firstValueFrom(
-      this.tokenClient.send('verify-refresh-token', token),
+      this.tokenClient.send({ cmd: 'verify-refresh-token' }, token),
     );
 
     if (!userPayload) {
@@ -72,14 +78,12 @@ export class AuthService {
     if (!refreshToken) {
       throw new UnauthorizedException('Token not provided');
     }
-    await firstValueFrom(
-      this.tokenClient.send('delete-refresh-token', refreshToken),
-    );
+    this.tokenClient.emit('user-logged-out', refreshToken);
   }
 
   private async generateAuthResponse(user: any) {
     const { accessToken, refreshToken } = await firstValueFrom(
-      this.tokenClient.send('user-created', user),
+      this.tokenClient.send({ cmd: 'generate-tokens' }, user),
     );
 
     return { accessToken, refreshToken, user };
@@ -87,7 +91,10 @@ export class AuthService {
 
   private async validateUser(credentials: AuthCredentialsDto) {
     const user = await firstValueFrom(
-      this.userClient.send('get-user-by-email', { email: credentials.email }),
+      this.userClient.send(
+        { cmd: 'get-user-by-email' },
+        { email: credentials.email },
+      ),
     );
     if (!user) {
       throw new UnauthorizedException('User not found');
