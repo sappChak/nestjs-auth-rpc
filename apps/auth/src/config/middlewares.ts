@@ -56,7 +56,7 @@ function setupSwagger(app: INestApplication) {
   SwaggerModule.setup('api/docs', app, document);
 }
 
-export function setup(app: INestApplication) {
+export function setupMiddlewares(app: INestApplication) {
   setupGlobalPrefix(app);
   enableCors(app);
   setupGlobalPipes(app);
