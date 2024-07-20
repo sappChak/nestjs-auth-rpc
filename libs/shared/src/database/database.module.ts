@@ -6,8 +6,12 @@ import { ConfigService } from '@nestjs/config';
   imports: [
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: async (configService: ConfigService) =>
-        configService.get<TypeOrmModuleOptions>('typeorm')!,
+      useFactory: async (configService: ConfigService) => {
+        const typeormOptions =
+          configService.get<TypeOrmModuleOptions>('typeorm');
+        if (!typeormOptions) throw new Error('TypeORM configuration not found');
+        return typeormOptions;
+      },
     }),
   ],
 })
