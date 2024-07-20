@@ -28,8 +28,6 @@ export class TokenController {
 
       const user = await this.tokenService.verifyRefreshToken(token);
 
-      this.logger.debug(`Refresh token verified for user with id: ${user.id}`);
-
       channel.ack(originalMsg);
 
       return user;
@@ -72,8 +70,6 @@ export class TokenController {
         this.tokenService.generateAccessToken(data),
         this.tokenService.generateRefreshToken(data),
       ]);
-
-      this.logger.debug(`Generated tokens for user with id: ${data.id}`);
 
       channel.ack(originalMsg);
 
