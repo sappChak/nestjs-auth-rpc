@@ -8,7 +8,7 @@ import * as path from 'path';
 dotenvConfig({ path: '.production.env' });
 
 const config = {
-  type: 'mysql',
+  type: 'postgres',
   host: process.env.DB_HOST,
   port: parseInt(process.env.DB_PORT!, 10),
   username: process.env.MYSQL_USER,
