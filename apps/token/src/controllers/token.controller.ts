@@ -43,20 +43,15 @@ export class TokenController {
   }
 
   @EventPattern('user-logged-out')
-  public async handleUserLoggedOut(data: { refreshToken: string }) {
+  public async handleUserLoggedOut(refreshToken: string) {
     try {
       this.logger.debug(
-        `user-logged-out event received: ${JSON.stringify(data)}`,
+        `user-logged-out event received: ${JSON.stringify(refreshToken)}`,
       );
-
-      await this.tokenService.revokeRefreshToken(data.refreshToken);
-
-      this.logger.debug(
-        `Refresh token deleted for user with id: ${data.refreshToken}`,
-      );
+      await this.tokenService.revokeRefreshToken(refreshToken);
     } catch (error) {
       this.logger.error(
-        `Failed to delete refresh token for user with id: ${data.refreshToken}`,
+        `Failed to delete refresh token: ${refreshToken}`,
         error.stack,
       );
     }
