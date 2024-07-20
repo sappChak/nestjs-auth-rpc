@@ -12,7 +12,7 @@ const config: TypeOrmModuleOptions = {
   port: parseInt(process.env.POSTGRES_PORT!, 10),
   username: process.env.POSTGRES_USER,
   password: process.env.POSTGRES_PASSWORD,
-  // database: process.env.POSTGRES_DB,
+  database: process.env.POSTGRES_DB,
   synchronize: isDevelopment,
   autoLoadEntities: true,
   entities: ['dist/apps/user/**/*.entity{.ts,.js}'],

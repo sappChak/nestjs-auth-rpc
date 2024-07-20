@@ -1,4 +1,4 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Logger } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { UserService } from '../services/user.service';
 import { User } from '../entities/user.entity';
@@ -9,35 +9,36 @@ import {
   Payload,
   RmqContext,
 } from '@nestjs/microservices';
+import { RmqService } from '@app/shared/rmq/rmq.service';
 
 @ApiTags('Users')
-@Controller('/users')
+@Controller('users')
 export class UserController {
-  public constructor(private readonly userService: UserService) { }
+  private readonly logger = new Logger(UserController.name);
+
+  public constructor(
+    private readonly userService: UserService,
+    private readonly rmqService: RmqService,
+  ) { }
 
   @MessagePattern('get-user-by-email')
   public async getUserByEmail(
-    @Payload() userId: string,
+    @Payload() email: any,
     @Ctx() context: RmqContext,
   ): Promise<User> {
-    const user = await this.userService.getUserByEmail(userId);
-    this.acknowledgeMessage(context);
+    this.logger.debug('User email: ', email);
+    const user = await this.userService.getUserByEmail(email);
+    this.rmqService.acknowledgeMessage(context);
     return user;
   }
 
-  @MessagePattern({ cmd: 'create-user' })
+  @MessagePattern('create-user')
   public async createUser(
     @Payload() user: CreateUserDto,
     @Ctx() context: RmqContext,
   ): Promise<User> {
     const newUser = await this.userService.saveUser(user);
-    this.acknowledgeMessage(context);
+    this.rmqService.acknowledgeMessage(context);
     return newUser;
-  }
-
-  private acknowledgeMessage(context: RmqContext): void {
-    const channel = context.getChannelRef();
-    const originalMsg = context.getMessage();
-    channel.ack(originalMsg);
   }
 }
