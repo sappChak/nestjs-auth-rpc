@@ -8,7 +8,7 @@ services:
       target: development
     command: npm run start:dev user
     env_file:
-      - ./apps/user/.env
+      - ./apps/user/.development.env
     depends_on:
       rabbitmq:
         condition: service_healthy
@@ -27,7 +27,7 @@ services:
       target: development
     command: npm run start:dev token
     env_file:
-      - ./apps/token/.env
+      - ./apps/token/.development.env
     depends_on:
       rabbitmq:
         condition: service_healthy
@@ -46,7 +46,7 @@ services:
       target: development
     command: npm run start:dev auth
     env_file:
-      - ./apps/auth/.env
+      - ./apps/auth/.development.env
     depends_on:
       rabbitmq:
         condition: service_healthy
@@ -67,7 +67,7 @@ services:
     ports:
       - '5432:5432'
     env_file:
-      - .development.env
+      - .psql.dev.env
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
@@ -83,7 +83,7 @@ services:
       - PGADMIN_LOG_LEVEL=ERROR
     user: '$UID:$GID'
     env_file:
-      - .development.env
+      - .psql.dev.env
     depends_on:
       postgres:
         condition: service_started
