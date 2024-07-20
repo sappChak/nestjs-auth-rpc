@@ -8,7 +8,7 @@ import { plainToInstance } from 'class-transformer';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AuthResponseDto } from '../dto/auth-response.dto';
-import { setRefreshTokenCookie } from '../utils/set-token.util';
+import { setRefreshTokenCookie } from '../utils/set-cookie.util';
 
 export class AuthInterceptor implements NestInterceptor {
   private readonly logger: Logger = new Logger(AuthInterceptor.name);

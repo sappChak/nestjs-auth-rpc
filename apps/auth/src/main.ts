@@ -1,8 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { AuthModule } from './auth.module';
-import { setupMiddlewares } from './config/middlewares';
 import { ConfigService } from '@nestjs/config';
+import { setupMiddlewares } from './config/middlewares';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AuthModule);
