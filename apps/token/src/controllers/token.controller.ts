@@ -40,6 +40,31 @@ export class TokenController {
     }
   }
 
+  @MessagePattern({ cmd: 'verify-access-token' })
+  public async handleAccessTokenVerification(
+    @Payload() token: string,
+    @Ctx() context: RmqContext,
+  ) {
+    const channel = context.getChannelRef();
+    const originalMsg = context.getMessage();
+
+    try {
+      this.logger.debug(`verify-access-token event received: ${token}`);
+
+      const user = await this.tokenService.verifyAccessToken(token);
+
+      channel.ack(originalMsg);
+
+      return user;
+    } catch (error) {
+      this.logger.error(
+        `Failed to verify refresh token: ${token}`,
+        error.stack,
+      );
+      channel.nack(originalMsg);
+    }
+  }
+
   @EventPattern('user-logged-out')
   public async handleUserLoggedOut(refreshToken: string) {
     try {
