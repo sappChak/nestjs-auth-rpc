@@ -16,7 +16,19 @@ export class UserService {
   }
 
   public async saveUser(user: CreateUserDto): Promise<User> {
-    return this.userRepository.save(user);
+    let existingUser = await this.userRepository.findOne({
+      where: { email: user.email },
+    });
+
+    if (existingUser) {
+      // If user exists, update the existing user with new data
+      existingUser = this.userRepository.merge(existingUser, user);
+    } else {
+      // If user doesn't exist, create a new user
+      existingUser = this.userRepository.create(user);
+    }
+
+    return this.userRepository.save(existingUser);
   }
 
   public async getUserByEmail(email: string): Promise<Nullable<User>> {
