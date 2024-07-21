@@ -8,8 +8,8 @@ import { ClientProxy } from '@nestjs/microservices';
 import { AuthCredentialsDto } from '../dto/auth-credentials.dto';
 import { AuthResponseDto } from '../dto/auth-response.dto';
 import { firstValueFrom } from 'rxjs';
-import * as bcrypt from 'bcrypt';
 import { TOKEN_SERVICE, USER_SERVICE } from '@app/shared/constants/constants';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -32,9 +32,7 @@ export class AuthService {
       this.userClient.send({ cmd: 'get-user-by-email' }, credentials.email),
     );
 
-    if (existingUser) {
-      throw new BadRequestException('User already exists');
-    }
+    if (existingUser) throw new BadRequestException('User already exists');
 
     const encryptedPassword = await bcrypt.hash(credentials.password, 10);
 
@@ -70,9 +68,6 @@ export class AuthService {
   }
 
   public async logout(refreshToken: string): Promise<void> {
-    if (!refreshToken) {
-      throw new UnauthorizedException('Token not provided');
-    }
     this.tokenClient.emit('user-logged-out', refreshToken);
   }
 
@@ -96,9 +91,8 @@ export class AuthService {
       credentials.password,
       user.password,
     );
-    if (!isPasswordValid) {
-      throw new UnauthorizedException('Invalid password');
-    }
+
+    if (!isPasswordValid) throw new UnauthorizedException('Invalid password');
 
     const { password, ...userWithoutPassword } = user;
     return userWithoutPassword;
