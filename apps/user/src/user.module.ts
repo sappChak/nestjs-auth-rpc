@@ -11,7 +11,7 @@ import typeormConfig from './config/typeorm';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: './apps/user/.env',
+      envFilePath: `./apps/user/.${process.env.NODE_ENV}.env`,
       isGlobal: true,
       load: [typeormConfig],
     }),

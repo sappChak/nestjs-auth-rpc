@@ -12,7 +12,7 @@ import typeormConfig from './config/typeorm';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: './apps/token/.env',
+      envFilePath: `./apps/token/.${process.env.NODE_ENV}.env`,
       isGlobal: true,
       load: [typeormConfig],
     }),
