@@ -5,11 +5,11 @@ import {
   Inject,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { TOKEN_SERVICE, USER_SERVICE } from '../constants/constants';
 import { AuthCredentialsDto } from '../dto/auth-credentials.dto';
 import { AuthResponseDto } from '../dto/auth-response.dto';
 import { firstValueFrom } from 'rxjs';
 import * as bcrypt from 'bcrypt';
+import { TOKEN_SERVICE, USER_SERVICE } from '@app/shared/constants/constants';
 
 @Injectable()
 export class AuthService {
