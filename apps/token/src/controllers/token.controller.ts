@@ -1,7 +1,7 @@
 import { Controller, UseFilters, UseInterceptors } from '@nestjs/common';
 import { Payload, MessagePattern, EventPattern } from '@nestjs/microservices';
 import { TokenService } from '../services/token.service';
-import { CreateTokenDto } from '../dto/create-tokens.dto';
+import { CreateTokenDto } from '../dto/create-token.dto';
 import { LoggingInterceptor } from '../interceptors/logger.interceptor';
 import { RpcExceptionFilter } from '../filters/rpc-exception.filter';
 

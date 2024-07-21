@@ -6,7 +6,7 @@ import { ConfigService } from '@nestjs/config';
 import { Nullable } from '@app/shared/types/types';
 import { ITokenService } from '../interfaces/token.service.interface';
 import { RefreshToken } from '../entities/token.entity';
-import { CreateTokenDto } from '../dto/create-tokens.dto';
+import { CreateTokenDto } from '../dto/create-token.dto';
 import { plainToInstance } from 'class-transformer';
 
 @Injectable()
@@ -19,9 +19,9 @@ export class TokenService implements ITokenService {
   private readonly logger = new Logger(TokenService.name);
 
   public constructor(
-    private readonly jwtService: JwtService,
     @InjectRepository(RefreshToken)
     private readonly tokenRepository: Repository<RefreshToken>,
+    private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
   ) {
     this.jwtAccessOptions = {
@@ -40,44 +40,39 @@ export class TokenService implements ITokenService {
     };
   }
 
-  public async generateAccessToken(
-    payload: CreateTokenDto,
-  ): Promise<string> {
-    this.logger.debug(
-      `Generating access token for user with id: ${payload.id}`,
-    );
-    return this.jwtService.sign({ ...payload }, this.jwtAccessOptions);
+  public async generateAccessToken(payload: CreateTokenDto): Promise<string> {
+    const token = this.jwtService.sign({ ...payload }, this.jwtAccessOptions);
+    this.logger.debug(`Generated access token for user with id: ${payload.id}`);
+    return token;
   }
 
-  public async generateRefreshToken(
-    payload: CreateTokenDto,
-  ): Promise<string> {
-    this.logger.debug(
-      `Generating refresh token for user with id: ${payload.id}`,
-    );
+  public async generateRefreshToken(payload: CreateTokenDto): Promise<string> {
     const refreshToken = this.jwtService.sign(
       { ...payload },
       this.jwtRefreshOptions,
     );
-    return await this.saveOrUpdateRefreshToken(payload.id, refreshToken);
+    this.logger.debug(
+      `Generated refresh token for user with id: ${payload.id}`,
+    );
+    return await this.createOrUpdateRefreshToken(payload.id, refreshToken);
   }
 
   public async revokeRefreshToken(refreshToken: string): Promise<void> {
     try {
+      const token = await this.tokenRepository.findOneBy({
+        refresh_token: refreshToken,
+      });
       await this.tokenRepository.delete({ refresh_token: refreshToken });
-      this.logger.debug(`Revoked refresh token: ${refreshToken}`);
+      this.logger.debug(`Revoked refresh token for user with id: ${token}`);
     } catch (error) {
-      this.logger.error('Failed to revoke refresh token', error.stack);
       throw new BadRequestException('Failed to revoke refresh token');
     }
   }
 
-  public async verifyAccessToken(
-    token: string,
-  ): Promise<CreateTokenDto> {
+  public async verifyAccessToken(accessToken: string): Promise<CreateTokenDto> {
     try {
       const payload = this.jwtService.verify(
-        token,
+        accessToken,
         this.jwtAccessVerifyOptions,
       );
       this.logger.debug(
@@ -85,22 +80,18 @@ export class TokenService implements ITokenService {
       );
       return plainToInstance(CreateTokenDto, payload);
     } catch (error) {
-      this.logger.error('Failed to verify access token', error.stack);
       throw new BadRequestException('Invalid access token');
     }
   }
 
-  public async verifyRefreshToken(
-    token: string,
-  ): Promise<CreateTokenDto> {
-    const storedToken = await this.findRefreshToken(token);
+  public async verifyRefreshToken(refreshToken: string): Promise<CreateTokenDto> {
+    const storedToken = await this.findRefreshToken(refreshToken);
     if (!storedToken) {
-      this.logger.warn('Refresh token not found');
       throw new BadRequestException('Token not found');
     }
     try {
       const payload = this.jwtService.verify(
-        token,
+        refreshToken,
         this.jwtRefreshVerifyOptions,
       );
       this.logger.debug(
@@ -108,38 +99,35 @@ export class TokenService implements ITokenService {
       );
       return plainToInstance(CreateTokenDto, payload);
     } catch (error) {
-      this.logger.error('Failed to verify refresh token', error.stack);
-      throw new BadRequestException('Invalid refresh token');
+      throw new BadRequestException('Failed to verify refresh token');
     }
   }
 
   private async findRefreshToken(
-    token: string,
+    refreshToken: string,
   ): Promise<Nullable<RefreshToken>> {
-    return this.tokenRepository.findOne({ where: { refresh_token: token } });
+    return this.tokenRepository.findOne({ where: { refresh_token: refreshToken } });
   }
 
-  private async saveOrUpdateRefreshToken(
+  private async createOrUpdateRefreshToken(
     userId: number,
-    token: string,
+    refreshToken: string,
   ): Promise<string> {
-    let existingToken = await this.tokenRepository.findOneBy({
+    let token = await this.tokenRepository.findOneBy({
       user_id: userId,
     });
-    if (existingToken) {
-      existingToken.refresh_token = token;
-      this.logger.debug(`Updating refresh token for user with id: ${userId}`);
+    if (token) {
+      token.refresh_token = refreshToken;
     } else {
-      this.logger.debug(`Creating refresh token for user with id: ${userId}`);
-      existingToken = this.tokenRepository.create({
+      token = this.tokenRepository.create({
         user_id: userId,
-        refresh_token: token,
+        refresh_token: refreshToken,
       });
     }
-    await this.tokenRepository.save(existingToken);
+    await this.tokenRepository.save(token);
     this.logger.debug(
-      `Saved refresh token for user with id: ${userId}, token: ${JSON.stringify(existingToken)}`,
+      `Saved refresh token for user with id: ${userId}, token: ${JSON.stringify(token)}`,
     );
-    return existingToken.refresh_token;
+    return token.refresh_token;
   }
 }
