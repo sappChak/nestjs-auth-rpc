@@ -27,15 +27,15 @@ export class GoogleAuthService {
     @Inject(TOKEN_SERVICE) private readonly tokenClient: ClientProxy,
     private readonly configService: ConfigService,
   ) {
-    this.googleClientId = this.configService.get<string>('GOOGLE_CLIENT_ID')!;
+    this.googleClientId = this.configService.get<string>('GOOGLE_CLIENT_ID');
     this.googleClientSecret = this.configService.get<string>(
       'GOOGLE_CLIENT_SECRET',
-    )!;
+    );
     this.googleRedirectUri = this.configService.get<string>(
       'GOOGLE_REDIRECT_URI',
-    )!;
-    this.googleTokenUrl = this.configService.get<string>('GOOGLE_TOKEN_URL')!;
-    this.googleGrantType = this.configService.get<string>('GOOGLE_GRANT_TYPE')!;
+    );
+    this.googleTokenUrl = this.configService.get<string>('GOOGLE_TOKEN_URL');
+    this.googleGrantType = this.configService.get<string>('GOOGLE_GRANT_TYPE');
     this.axiosInstance = axios.create({
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
