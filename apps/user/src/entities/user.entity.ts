@@ -9,7 +9,19 @@ export class User {
 
   @Column()
   @Expose()
+  name: string;
+
+  @Column()
+  @Expose()
+  surname: string;
+
+  @Column()
+  @Expose()
   email: string;
+
+  @Column()
+  @Expose()
+  profile_picture: string;
 
   @Column()
   @Expose()
