@@ -6,6 +6,7 @@ import { RmqModule } from '@app/shared/rmq/rmq.module';
 import { TOKEN_SERVICE, USER_SERVICE } from '@app/shared/constants/constants';
 import { GoogleAuthController } from './controllers/google.auth.controller';
 import { GoogleAuthService } from './services/google.auth.service';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { GoogleAuthService } from './services/google.auth.service';
       envFilePath: `./apps/auth/.${process.env.NODE_ENV}.env`,
       isGlobal: true,
     }),
+    HttpModule,
     RmqModule.register({
       name: TOKEN_SERVICE,
     }),
