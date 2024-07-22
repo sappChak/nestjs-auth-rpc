@@ -5,8 +5,8 @@ import {
 } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { Reflector } from '@nestjs/core';
-import * as cookieParser from 'cookie-parser';
-import * as express from 'express';
+import cookieParser from 'cookie-parser';
+import express from 'express';
 
 function setupGlobalPrefix(app: INestApplication) {
   app.setGlobalPrefix('api');
