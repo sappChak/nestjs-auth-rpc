@@ -4,12 +4,12 @@ import {
   UnauthorizedException,
   Inject,
 } from '@nestjs/common';
+import { firstValueFrom } from 'rxjs';
+import * as bcrypt from 'bcrypt';
 import { ClientProxy } from '@nestjs/microservices';
 import { AuthCredentialsDto } from '../dto/auth-credentials.dto';
 import { AuthResponseDto } from '../dto/auth-response.dto';
-import { firstValueFrom } from 'rxjs';
 import { TOKEN_SERVICE, USER_SERVICE } from '@app/shared/constants/constants';
-import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -52,10 +52,6 @@ export class AuthService {
   }
 
   public async refresh(token: string): Promise<AuthResponseDto> {
-    if (!token) {
-      throw new UnauthorizedException('Token not provided');
-    }
-
     const userPayload = await firstValueFrom(
       this.tokenClient.send({ cmd: 'verify-refresh-token' }, token),
     );
@@ -73,7 +69,6 @@ export class AuthService {
     const { accessToken, refreshToken } = await firstValueFrom(
       this.tokenClient.send({ cmd: 'generate-tokens' }, user),
     );
-
     return { accessToken, refreshToken, user };
   }
 

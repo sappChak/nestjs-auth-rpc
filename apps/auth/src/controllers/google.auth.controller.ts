@@ -8,9 +8,9 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
+import * as express from 'express';
 import { GoogleAuthService } from '../services/google.auth.service';
 import { setRefreshTokenCookie } from '../utils/set-cookie.util';
-import * as express from 'express';
 
 @ApiTags('Google Auth')
 @Controller()

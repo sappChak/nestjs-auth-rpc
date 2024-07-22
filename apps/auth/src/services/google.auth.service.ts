@@ -3,13 +3,13 @@ import { ConfigService } from '@nestjs/config';
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { stringify } from 'qs';
 import { ClientProxy } from '@nestjs/microservices';
+import { firstValueFrom, lastValueFrom } from 'rxjs';
 import { AuthResponseDto } from '../dto/auth-response.dto';
 import { GoogleToken } from '../interfaces/google-token.interface';
-import { Nullable } from '@app/shared/types/types';
 import { GoogleUser } from '../interfaces/google-user.interface';
-import { firstValueFrom, lastValueFrom } from 'rxjs';
-import { TOKEN_SERVICE, USER_SERVICE } from '@app/shared/constants/constants';
 import { AuthCredentialsDto } from '../dto/auth-credentials.dto';
+import { TOKEN_SERVICE, USER_SERVICE } from '@app/shared/constants/constants';
+import { Nullable } from '@app/shared/types/types';
 
 @Injectable()
 export class GoogleAuthService {
