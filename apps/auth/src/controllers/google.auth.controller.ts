@@ -2,21 +2,18 @@ import {
   BadRequestException,
   Controller,
   Get,
-  Logger,
   Query,
   Res,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
-import * as express from 'express';
+import express from 'express';
 import { GoogleAuthService } from '../services/google.auth.service';
 import { setRefreshTokenCookie } from '../utils/set-cookie.util';
 
 @ApiTags('Google Auth')
 @Controller()
 export class GoogleAuthController {
-  private readonly logger = new Logger(GoogleAuthController.name);
-
   public constructor(private readonly googleAuthService: GoogleAuthService) { }
 
   @Get('/tokens/oauth/google')
@@ -43,16 +40,11 @@ export class GoogleAuthController {
     @Query('state') state: string,
     @Res() response: express.Response,
   ) {
-    this.logger.debug(
-      `Received OAuth callback with code: ${code} and state: ${state}`,
-    );
-
     const oAuthTokens = await this.getOAuthTokens(code);
     const googleUser = await this.getGoogleUser(oAuthTokens);
     const userDto = this.createUserDto(googleUser);
     const result = await this.loginGoogleUser(userDto);
 
-    this.logger.debug('Setting refresh token cookie and redirecting user');
     setRefreshTokenCookie(response, result.refreshToken);
     return response.redirect(process.env.CLIENT_URL);
   }
