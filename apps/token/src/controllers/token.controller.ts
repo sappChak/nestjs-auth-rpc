@@ -1,13 +1,11 @@
-import { Controller, UseFilters, UseInterceptors } from '@nestjs/common';
+import { Controller, UseInterceptors } from '@nestjs/common';
 import { Payload, MessagePattern, EventPattern } from '@nestjs/microservices';
 import { TokenService } from '../services/token.service';
 import { CreateTokenDto } from '../dto/create-token.dto';
-import { LoggingInterceptor } from '../interceptors/logger.interceptor';
-import { RpcExceptionFilter } from '../filters/rpc-exception.filter';
+import { RmqInterceptor } from '@app/shared/interceptors/rmq.interceptor';
 
 @Controller()
-@UseFilters(RpcExceptionFilter)
-@UseInterceptors(LoggingInterceptor)
+@UseInterceptors(RmqInterceptor)
 export class TokenController {
   public constructor(private readonly tokenService: TokenService) { }
 

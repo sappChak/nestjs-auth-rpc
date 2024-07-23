@@ -84,7 +84,9 @@ export class TokenService implements ITokenService {
     }
   }
 
-  public async verifyRefreshToken(refreshToken: string): Promise<CreateTokenDto> {
+  public async verifyRefreshToken(
+    refreshToken: string,
+  ): Promise<CreateTokenDto> {
     const storedToken = await this.findRefreshToken(refreshToken);
     if (!storedToken) {
       throw new BadRequestException('Token not found');
@@ -106,7 +108,9 @@ export class TokenService implements ITokenService {
   private async findRefreshToken(
     refreshToken: string,
   ): Promise<Nullable<RefreshToken>> {
-    return this.tokenRepository.findOne({ where: { refresh_token: refreshToken } });
+    return this.tokenRepository.findOne({
+      where: { refresh_token: refreshToken },
+    });
   }
 
   private async createOrUpdateRefreshToken(
