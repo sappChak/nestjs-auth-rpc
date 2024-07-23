@@ -14,9 +14,8 @@ const config: TypeOrmModuleOptions = {
   password: process.env.POSTGRES_PASSWORD,
   database: process.env.POSTGRES_DB,
   synchronize: isDevelopment,
-  autoLoadEntities: true,
   entities: ['dist/apps/user/**/*.entity{.ts,.js}'],
-  migrations: ['dist/migrations/*{.ts,.js}'],
+  migrations: ['dist/apps/user/migrations/*{.ts,.js}'],
   ssl: isProduction
     ? {
       rejectUnauthorized: true,
