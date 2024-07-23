@@ -19,7 +19,7 @@ export class User {
   @Expose()
   email: string;
 
-  @Column()
+  @Column({ nullable: true })
   @Expose()
   profile_picture: string;
 
