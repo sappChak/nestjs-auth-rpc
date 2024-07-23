@@ -1,80 +1,41 @@
-import {
-  Controller,
-  Post,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Body,
-  Req,
-  Res,
-  UseInterceptors,
-} from '@nestjs/common';
-import { ApiTags, ApiResponse, ApiOperation, ApiBody } from '@nestjs/swagger';
-import { Request, Response } from 'express';
+import { Controller, UseInterceptors } from '@nestjs/common';
+import { MessagePattern, Payload } from '@nestjs/microservices';
+import { RmqInterceptor } from '@app/shared/interceptors/rmq.interceptor';
 import { AuthService } from '../services/auth.service';
-import { AuthInterceptor } from '../interceptors/auth.interceptor';
 import { AuthCredentialsDto } from '../dto/auth-credentials.dto';
 import { AuthResponseDto } from '../dto/auth-response.dto';
 
-@ApiTags('Auth')
-@Controller('auth')
-@UseInterceptors(AuthInterceptor)
+@Controller()
+@UseInterceptors(RmqInterceptor)
 export class AuthController {
   public constructor(private readonly authService: AuthService) { }
 
-  @Post('/login')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Login' })
-  @ApiBody({ type: AuthCredentialsDto, description: 'Login credentials' })
-  @ApiResponse({
-    status: 200,
-    description: 'Login successful.',
-    type: AuthResponseDto,
-  })
+  @MessagePattern({ cmd: 'login' })
   public async login(
-    @Body() credentials: AuthCredentialsDto,
+    @Payload() credentials: AuthCredentialsDto,
   ): Promise<AuthResponseDto> {
     return await this.authService.login(credentials);
   }
 
-  @Post('/register')
-  @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Register' })
-  @ApiBody({ type: AuthCredentialsDto, description: 'Registration data' })
-  @ApiResponse({
-    status: 201,
-    description: 'Registration successful.',
-    type: AuthResponseDto,
-  })
+  @MessagePattern({ cmd: 'register' })
   public async register(
-    @Body() credentials: AuthCredentialsDto,
+    @Payload() credentials: AuthCredentialsDto,
   ): Promise<AuthResponseDto> {
     return await this.authService.register(credentials);
   }
 
-  @Post('/logout')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Logout' })
+  @MessagePattern({ cmd: 'logout' })
   public async logout(
-    @Req() request: Request,
-    @Res({ passthrough: true }) response: Response,
+    @Payload() refreshToken: string,
   ): Promise<{ message: string }> {
-    const refreshToken = request.cookies.refreshToken;
     await this.authService.logout(refreshToken);
-    response.clearCookie('refreshToken');
     return { message: 'Logout successful' };
   }
 
-  @Get('/refresh')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Refresh token' })
-  @ApiResponse({
-    status: 200,
-    description: 'Token refreshed.',
-    type: AuthResponseDto,
-  })
-  public async refresh(@Req() request: Request): Promise<AuthResponseDto> {
-    const refreshToken = request.cookies.refreshToken;
+  @MessagePattern({ cmd: 'refresh' })
+  public async refresh(
+    @Payload() refreshToken: string,
+  ): Promise<AuthResponseDto> {
     return await this.authService.refresh(refreshToken);
   }
 }
