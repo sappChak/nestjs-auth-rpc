@@ -23,10 +23,13 @@ export class RmqInterceptor implements NestInterceptor {
                 const ctx = context.switchToRpc().getContext<RmqContext>();
                 return next.handle().pipe(
                         tap(() => this.rmqService.acknowledgeMessage(ctx)),
-                        catchError((err) => {
-                                this.logger.error(err.message, err.stack);
+                        catchError((error) => {
+                                this.logger.error(
+                                        `Failed to process message: ${ctx.getMessage().content.toString()}`,
+                                        error,
+                                );
                                 this.rmqService.rejectMessage(ctx, false);
-                                return throwError(() => err);
+                                return throwError(() => error);
                         }),
                 );
         }
