@@ -8,7 +8,7 @@
     "tsConfigPath": "apps/roar-nest/tsconfig.app.json"
   },
   "monorepo": true,
-  "root": "apps/roar-nest",
+  "root": "apps/gateway",
   "projects": {
     "shared": {
       "type": "library",
@@ -44,6 +44,15 @@
       "sourceRoot": "apps/token/src",
       "compilerOptions": {
         "tsConfigPath": "apps/token/tsconfig.app.json"
+      }
+    },
+    "gateway": {
+      "type": "application",
+      "root": "apps/gateway",
+      "entryFile": "main",
+      "sourceRoot": "apps/gateway/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/gateway/tsconfig.app.json"
       }
     }
   }
