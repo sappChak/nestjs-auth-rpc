@@ -17,8 +17,6 @@ services:
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
-    ports:
-      - '3001:3001'
 
   token:
     build:
@@ -36,8 +34,6 @@ services:
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
-    ports:
-      - '3002:3002'
 
   auth:
     build:
@@ -57,8 +53,29 @@ services:
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
+
+  gateway:
+    build:
+      context: .
+      dockerfile: ./apps/gateway/Dockerfile
+      target: development
+    command: npm run start:dev gateway
+    env_file:
+      - ./apps/gateway/.development.env
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      user:
+        condition: service_started
+      token:
+        condition: service_started
+      auth:
+        condition: service_started
     ports:
       - '3000:3000'
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
 
   postgres:
     image: postgres:latest
