@@ -5,7 +5,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { catchError, firstValueFrom, lastValueFrom, throwError } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import bcrypt from 'bcrypt';
 import { TOKEN_SERVICE, USER_SERVICE } from '@app/shared/constants/constants';
 import { AuthCredentialsDto } from '../dto/auth-credentials.dto';
