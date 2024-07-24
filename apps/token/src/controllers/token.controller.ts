@@ -1,5 +1,5 @@
 import { Controller, UseInterceptors } from '@nestjs/common';
-import { Payload, MessagePattern, EventPattern } from '@nestjs/microservices';
+import { EventPattern, MessagePattern, Payload } from '@nestjs/microservices';
 import { RmqInterceptor } from '@app/shared/interceptors/rmq.interceptor';
 import { TokenService } from '../services/token.service';
 import { CreateTokenDto } from '../dto/create-token.dto';
@@ -19,9 +19,9 @@ export class TokenController {
     return this.tokenService.verifyAccessToken(token);
   }
 
-  @EventPattern('user-logged-out')
-  public async handleUserLoggedOut(@Payload() refreshToken: string) {
-    return this.tokenService.revokeRefreshToken(refreshToken);
+  @EventPattern('refresh-token-revoked')
+  public async handleRefreshTokenRevoking(@Payload() refreshToken: string) {
+    await this.tokenService.deleteRefreshToken(refreshToken);
   }
 
   @MessagePattern({ cmd: 'generate-tokens' })
