@@ -1,8 +1,8 @@
 import { Controller, UseInterceptors } from '@nestjs/common';
 import { Payload, MessagePattern, EventPattern } from '@nestjs/microservices';
+import { RmqInterceptor } from '@app/shared/interceptors/rmq.interceptor';
 import { TokenService } from '../services/token.service';
 import { CreateTokenDto } from '../dto/create-token.dto';
-import { RmqInterceptor } from '@app/shared/interceptors/rmq.interceptor';
 
 @Controller()
 @UseInterceptors(RmqInterceptor)
