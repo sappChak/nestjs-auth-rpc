@@ -5,9 +5,9 @@ import {
         Logger,
         NestInterceptor,
 } from '@nestjs/common';
-import { Observable, throwError } from 'rxjs';
+import { Observable } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
-import { RmqContext } from '@nestjs/microservices';
+import { RmqContext, RpcException } from '@nestjs/microservices';
 import { RmqService } from '@app/shared/rmq/rmq.service';
 
 @Injectable()
@@ -23,13 +23,13 @@ export class RmqInterceptor implements NestInterceptor {
                 const ctx = context.switchToRpc().getContext<RmqContext>();
                 return next.handle().pipe(
                         tap(() => this.rmqService.acknowledgeMessage(ctx)),
-                        catchError((error) => {
+                        catchError((err) => {
                                 this.logger.error(
                                         `Failed to process message: ${ctx.getMessage().content.toString()}`,
-                                        error,
+                                        err,
                                 );
                                 this.rmqService.rejectMessage(ctx, false);
-                                return throwError(() => error);
+                                throw new RpcException(err);
                         }),
                 );
         }
