@@ -55,7 +55,7 @@ export class AuthController {
   public async register(
     @Body() credentials: AuthCredentialsDto,
   ): Promise<AuthResponseDto> {
-    return await lastValueFrom(
+    return lastValueFrom(
       this.authClient.send({ cmd: 'register' }, credentials),
     );
   }
@@ -67,7 +67,7 @@ export class AuthController {
     @Res({ passthrough: true }) response: Response,
     @CookieParam('refreshToken', new ValidateRefreshTokenPipe())
     refreshToken: string,
-  ) {
+  ): Promise<{ message: string }> {
     const message = await lastValueFrom(
       this.authClient.send({ cmd: 'logout' }, refreshToken),
     );
