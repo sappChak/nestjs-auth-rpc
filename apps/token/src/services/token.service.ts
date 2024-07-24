@@ -1,13 +1,18 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { JwtService, JwtSignOptions, JwtVerifyOptions } from '@nestjs/jwt';
+import { plainToInstance } from 'class-transformer';
 import { ConfigService } from '@nestjs/config';
 import { Nullable } from '@app/shared/types/types';
 import { ITokenService } from '../interfaces/token.service.interface';
 import { RefreshToken } from '../entities/token.entity';
 import { CreateTokenDto } from '../dto/create-token.dto';
-import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class TokenService implements ITokenService {
@@ -57,15 +62,19 @@ export class TokenService implements ITokenService {
     return await this.createOrUpdateRefreshToken(payload.id, refreshToken);
   }
 
-  public async revokeRefreshToken(refreshToken: string): Promise<void> {
+  public async deleteRefreshToken(refreshToken: string): Promise<void> {
     try {
       const token = await this.tokenRepository.findOneBy({
         refresh_token: refreshToken,
       });
       await this.tokenRepository.delete({ refresh_token: refreshToken });
-      this.logger.debug(`Revoked refresh token for user with id: ${token}`);
+      this.logger.debug(`Deleted refresh token: ${token}`);
     } catch (error) {
-      throw new BadRequestException('Failed to revoke refresh token');
+      console.log(error);
+      throw new InternalServerErrorException(
+        'Failed to revoke refresh token',
+        error,
+      );
     }
   }
 
