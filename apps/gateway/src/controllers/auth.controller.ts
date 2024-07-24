@@ -10,14 +10,14 @@ import {
   UseInterceptors,
   Inject,
 } from '@nestjs/common';
-import { ClientProxy, RpcException } from '@nestjs/microservices';
+import { ClientProxy } from '@nestjs/microservices';
 import { ApiTags, ApiResponse, ApiOperation, ApiBody } from '@nestjs/swagger';
 import { Request, Response } from 'express';
-import { catchError, lastValueFrom, throwError } from 'rxjs';
+import { lastValueFrom } from 'rxjs';
+import { AUTH_SERVICE } from '@app/shared/constants/constants';
 import { AuthInterceptor } from '../interceptors/auth.interceptor';
 import { AuthCredentialsDto } from '../dtos/auth-credentials.dto';
 import { AuthResponseDto } from '../dtos/auth-response.dto';
-import { AUTH_SERVICE } from '@app/shared/constants/constants';
 
 @ApiTags('Auth')
 @Controller('auth')
