@@ -1,14 +1,17 @@
-import { Controller, Get, Query, Res } from '@nestjs/common';
+import { Controller, Get, Inject, Query, Res } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
 import express from 'express';
-import { setRefreshTokenCookie } from '../utils/set-cookie.util';
 import { ClientProxy } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
+import { AUTH_SERVICE } from '@app/shared/constants/constants';
+import { setRefreshTokenCookie } from '../utils/set-cookie.util';
 
 @ApiTags('Google Auth')
 @Controller()
 export class GoogleAuthController {
-  public constructor(private readonly googleAuthClient: ClientProxy) { }
+  public constructor(
+    @Inject(AUTH_SERVICE) private readonly googleAuthClient: ClientProxy,
+  ) { }
 
   @Get('/tokens/oauth/google')
   @ApiOperation({ summary: 'Google OAuth Callback' })
