@@ -29,7 +29,7 @@ export class AuthController {
     @Payload() refreshToken: string,
   ): Promise<{ message: string }> {
     await this.authService.logout(refreshToken);
-    return { message: 'Logout successful' };
+    return { message: 'Logout successfull' };
   }
 
   @MessagePattern({ cmd: 'refresh' })
