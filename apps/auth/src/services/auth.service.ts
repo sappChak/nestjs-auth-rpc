@@ -1,7 +1,12 @@
-import { Injectable, Inject } from '@nestjs/common';
+import {
+  Injectable,
+  Inject,
+  ConflictException,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
-import * as bcrypt from 'bcrypt';
-import { ClientProxy, RpcException } from '@nestjs/microservices';
+import bcrypt from 'bcrypt';
 import { TOKEN_SERVICE, USER_SERVICE } from '@app/shared/constants/constants';
 import { AuthCredentialsDto } from '../dto/auth-credentials.dto';
 import { AuthResponseDto } from '../dto/auth-response.dto';
@@ -27,7 +32,7 @@ export class AuthService {
       this.userClient.send({ cmd: 'get-user-by-email' }, credentials.email),
     );
 
-    if (existingUser) throw new RpcException('User already exists');
+    if (existingUser) throw new ConflictException('User already exists');
 
     const encryptedPassword = await bcrypt.hash(credentials.password, 10);
 
@@ -51,7 +56,7 @@ export class AuthService {
       this.tokenClient.send({ cmd: 'verify-refresh-token' }, token),
     );
 
-    if (!userPayload) throw new RpcException('Invalid token');
+    if (!userPayload) throw new UnauthorizedException('Invalid token');
 
     return this.generateAuthResponse(userPayload);
   }
@@ -71,14 +76,14 @@ export class AuthService {
     const user = await firstValueFrom(
       this.userClient.send({ cmd: 'get-user-by-email' }, credentials.email),
     );
-    if (!user) throw new RpcException('User not found');
+    if (!user) throw new UnauthorizedException('User not found');
 
     const isPasswordValid = await bcrypt.compare(
       credentials.password,
       user.password,
     );
 
-    if (!isPasswordValid) throw new RpcException('Invalid password');
+    if (!isPasswordValid) throw new UnauthorizedException('Invalid password');
 
     const { password, ...userWithoutPassword } = user;
     return userWithoutPassword;
