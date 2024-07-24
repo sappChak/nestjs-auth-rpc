@@ -7,7 +7,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { Reflector } from '@nestjs/core';
 import cookieParser from 'cookie-parser';
 import express from 'express';
-import { AllExceptionsFilter } from '@app/shared/filters/all-exceptions.filter';
+import { AllExceptionsFilter } from '../filters/all-exceptions.filter';
 
 function setupGlobalPrefix(app: INestApplication) {
   app.setGlobalPrefix('api');
