@@ -13,6 +13,9 @@ export class AuthResponseDto {
   @Expose()
   user: {
     id: number;
+    name: string;
+    surname: string;
     email: string;
+    profile_picture?: string;
   };
 }
