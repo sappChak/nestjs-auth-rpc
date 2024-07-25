@@ -11,7 +11,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { JwtAuthGuard } from '@app/shared/guards/jwt.auth.guard';
 import {
   ApiOperation,
   ApiResponse,
@@ -19,6 +18,7 @@ import {
   ApiBody,
   ApiBearerAuth,
 } from '@nestjs/swagger';
+import { JwtAuthGuard } from '@app/shared/guards/jwt.auth.guard';
 import { USER_SERVICE } from '@app/shared/constants/constants';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { UpdateUserDto } from '../dtos/update-user.dto';
@@ -49,6 +49,7 @@ export class UserController {
   }
 
   @Post()
+  @HttpCode(HttpStatus.CREATED)
   @ApiBody({ type: CreateUserDto })
   @ApiOperation({ summary: 'Create a new user' })
   @ApiResponse({ status: 201, description: 'User created successfully' })
@@ -57,6 +58,7 @@ export class UserController {
   }
 
   @Put(':id')
+  @HttpCode(HttpStatus.OK)
   @ApiBody({ type: UpdateUserDto })
   @ApiOperation({ summary: 'Update a user' })
   @ApiResponse({ status: 200, description: 'User updated successfully' })
