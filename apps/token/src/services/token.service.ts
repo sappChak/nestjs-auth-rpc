@@ -68,7 +68,7 @@ export class TokenService implements ITokenService {
         refresh_token: refreshToken,
       });
       await this.tokenRepository.delete({ refresh_token: refreshToken });
-      this.logger.debug(`Deleted refresh token: ${token}`);
+      this.logger.debug(`Deleted refresh token for user with id: ${token.user_id}`);
     } catch (error) {
       console.log(error);
       throw new InternalServerErrorException(
@@ -106,7 +106,7 @@ export class TokenService implements ITokenService {
         this.jwtRefreshVerifyOptions,
       );
       this.logger.debug(
-        `Refresh token verified for payload: ${JSON.stringify(payload)}`,
+        `Refresh token verified for user with id: ${payload.id}`,
       );
       return plainToInstance(CreateTokenDto, payload);
     } catch (error) {
@@ -139,7 +139,7 @@ export class TokenService implements ITokenService {
     }
     await this.tokenRepository.save(token);
     this.logger.debug(
-      `Saved refresh token for user with id: ${userId}, token: ${JSON.stringify(token)}`,
+      `Saved refresh token for user with id: ${userId}`,
     );
     return token.refresh_token;
   }
