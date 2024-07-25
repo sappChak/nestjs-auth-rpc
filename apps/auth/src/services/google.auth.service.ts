@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { ClientProxy } from '@nestjs/microservices';
 import { HttpService } from '@nestjs/axios';
 import { stringify } from 'qs';
-import { firstValueFrom, lastValueFrom } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { TOKEN_SERVICE, USER_SERVICE } from '@app/shared/constants/constants';
 import { AuthResponseDto } from '../dto/auth-response.dto';
 import { GoogleToken } from '../interfaces/google-token.interface';
@@ -42,7 +42,7 @@ export class GoogleAuthService {
   public async loginGoogleUser(
     createUserDto: AuthCredentialsDto,
   ): Promise<AuthResponseDto> {
-    const user = await lastValueFrom(
+    const user = await firstValueFrom(
       this.userClient.send({ cmd: 'create-user' }, createUserDto),
     );
     return this.authorizeWithGoogle(user);

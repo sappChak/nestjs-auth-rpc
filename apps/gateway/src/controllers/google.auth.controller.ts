@@ -2,7 +2,7 @@ import { Controller, Get, Inject, Query, Res } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
 import express from 'express';
 import { ClientProxy } from '@nestjs/microservices';
-import { lastValueFrom } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { AUTH_SERVICE } from '@app/shared/constants/constants';
 import { setRefreshTokenCookie } from '../utils/set-cookie.util';
 
@@ -37,7 +37,7 @@ export class GoogleAuthController {
     @Query('state') state: string,
     @Res() response: express.Response,
   ) {
-    const result = await lastValueFrom(
+    const result = await firstValueFrom(
       this.googleAuthClient.send({ cmd: 'login-with-google' }, { code, state }),
     );
     setRefreshTokenCookie(response, result.refreshToken);
