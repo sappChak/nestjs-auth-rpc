@@ -28,7 +28,9 @@ export class AuthInterceptor implements NestInterceptor {
       map((data) => {
         if (data.refreshToken) {
           setRefreshTokenCookie(response, data.refreshToken);
-          this.logger.debug(`Setting refresh token cookie`);
+          this.logger.debug(
+            `Setting refresh token cookie for user with id: ${data.user.id}`,
+          );
           return plainToInstance(AuthResponseDto, data);
         }
         return data;

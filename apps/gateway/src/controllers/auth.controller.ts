@@ -12,7 +12,7 @@ import {
 import { ClientProxy } from '@nestjs/microservices';
 import { ApiTags, ApiResponse, ApiOperation, ApiBody } from '@nestjs/swagger';
 import { Response } from 'express';
-import { lastValueFrom } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { AUTH_SERVICE } from '@app/shared/constants/constants';
 import { AuthInterceptor } from '../interceptors/auth.interceptor';
 import { AuthCredentialsDto } from '../dtos/auth-credentials.dto';
@@ -40,7 +40,7 @@ export class AuthController {
   public async login(
     @Body() credentials: AuthCredentialsDto,
   ): Promise<AuthResponseDto> {
-    return lastValueFrom(this.authClient.send({ cmd: 'login' }, credentials));
+    return firstValueFrom(this.authClient.send({ cmd: 'login' }, credentials));
   }
 
   @Post('register')
@@ -55,7 +55,7 @@ export class AuthController {
   public async register(
     @Body() credentials: AuthCredentialsDto,
   ): Promise<AuthResponseDto> {
-    return lastValueFrom(
+    return firstValueFrom(
       this.authClient.send({ cmd: 'register' }, credentials),
     );
   }
@@ -68,7 +68,7 @@ export class AuthController {
     @CookieParam('refreshToken', new ValidateRefreshTokenPipe())
     refreshToken: string,
   ): Promise<{ message: string }> {
-    const message = await lastValueFrom(
+    const message = await firstValueFrom(
       this.authClient.send({ cmd: 'logout' }, refreshToken),
     );
     response.clearCookie('refreshToken');
@@ -87,7 +87,7 @@ export class AuthController {
     @CookieParam('refreshToken', new ValidateRefreshTokenPipe())
     refreshToken: string,
   ): Promise<AuthResponseDto> {
-    return lastValueFrom(
+    return firstValueFrom(
       this.authClient.send({ cmd: 'refresh' }, refreshToken),
     );
   }
