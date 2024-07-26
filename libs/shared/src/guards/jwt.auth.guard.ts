@@ -6,8 +6,7 @@ import {
         UnauthorizedException,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { Observable } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { firstValueFrom, Observable } from 'rxjs';
 import { TOKEN_SERVICE } from '../constants/constants';
 
 @Injectable()
@@ -22,26 +21,24 @@ export class JwtAuthGuard implements CanActivate {
                 const request = context.switchToHttp().getRequest();
                 const token = this.extractToken(request.headers['authorization']);
 
-                request.user = this.tokenClient.send('verify-access-token', token).pipe(
-                        catchError(() => {
+                return firstValueFrom(
+                        this.tokenClient.send({ cmd: 'verify-access-token' }, token),
+                )
+                        .then((user) => {
+                                request.user = user;
+                                return true;
+                        })
+                        .catch(() => {
                                 throw new UnauthorizedException('Invalid access token');
-                        }),
-                );
-
-                return true;
+                        });
         }
 
         private extractToken(authorization: string): string {
-                if (!authorization) {
+                if (!authorization)
                         throw new UnauthorizedException('Access token is not provided');
-                }
-
                 const [bearer, token] = authorization.split(' ');
-
-                if (bearer !== 'Bearer' || !token) {
+                if (bearer !== 'Bearer' || !token)
                         throw new UnauthorizedException('Invalid access token');
-                }
-
                 return token;
         }
 }
