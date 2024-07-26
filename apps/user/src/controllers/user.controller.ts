@@ -2,7 +2,6 @@ import { Controller, UseInterceptors } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { RmqInterceptor } from '@app/shared/interceptors/rmq.interceptor';
 import { UserService } from '../services/user.service';
-import { User } from '../entities/user.entity';
 import { CreateUserDto } from '../dto/create-user.dto';
 
 @Controller()
@@ -11,22 +10,27 @@ export class UserController {
   public constructor(private readonly userService: UserService) { }
 
   @MessagePattern({ cmd: 'get-user-by-email' })
-  public async getUserByEmail(@Payload() email: string): Promise<User> {
+  public async getUserByEmail(@Payload() email: string) {
     return this.userService.getUserByEmail(email);
   }
 
   @MessagePattern({ cmd: 'get-all-users' })
-  public async getAllUsers(): Promise<User[]> {
+  public async getAllUsers() {
     return this.userService.getAllUsers();
   }
 
   @MessagePattern({ cmd: 'get-user-by-id' })
-  public async getUserById(@Payload() id: number): Promise<User> {
+  public async getUserById(@Payload() id: number) {
     return this.userService.getUserById(id);
   }
 
   @MessagePattern({ cmd: 'create-user' })
-  public async createUser(@Payload() user: CreateUserDto): Promise<User> {
-    return this.userService.createOrUpdateUser(user);
+  public async createUser(@Payload() user: CreateUserDto) {
+    return this.userService.mergeOrCreateUser(user);
+  }
+
+  @MessagePattern({ cmd: 'delete-user' })
+  public async deleteUser(@Payload() id: number) {
+    return this.userService.deleteUser(id);
   }
 }
