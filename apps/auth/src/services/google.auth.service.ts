@@ -5,10 +5,10 @@ import { HttpService } from '@nestjs/axios';
 import { stringify } from 'qs';
 import { firstValueFrom } from 'rxjs';
 import { TOKEN_SERVICE, USER_SERVICE } from '@app/shared/constants/constants';
-import { AuthResponseDto } from '../dto/auth-response.dto';
+import { AuthResponseDto } from '../dtos/auth-response.dto';
 import { GoogleToken } from '../interfaces/google-token.interface';
 import { GoogleUser } from '../interfaces/google-user.interface';
-import { AuthCredentialsDto } from '../dto/auth-credentials.dto';
+import { AuthCredentialsDto } from '../dtos/auth-credentials.dto';
 
 @Injectable()
 export class GoogleAuthService {

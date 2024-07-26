@@ -8,8 +8,8 @@ import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import bcrypt from 'bcrypt';
 import { TOKEN_SERVICE, USER_SERVICE } from '@app/shared/constants/constants';
-import { AuthCredentialsDto } from '../dto/auth-credentials.dto';
-import { AuthResponseDto } from '../dto/auth-response.dto';
+import { AuthCredentialsDto } from '../dtos/auth-credentials.dto';
+import { AuthResponseDto } from '../dtos/auth-response.dto';
 
 @Injectable()
 export class AuthService {

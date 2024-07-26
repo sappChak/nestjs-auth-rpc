@@ -12,7 +12,7 @@ import { ConfigService } from '@nestjs/config';
 import { Nullable } from '@app/shared/types/types';
 import { ITokenService } from '../interfaces/token.service.interface';
 import { RefreshToken } from '../entities/token.entity';
-import { CreateTokenDto } from '../dto/create-token.dto';
+import { CreateTokenDto } from '../dtos/create-token.dto';
 
 @Injectable()
 export class TokenService implements ITokenService {

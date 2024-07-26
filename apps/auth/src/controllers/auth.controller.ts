@@ -2,8 +2,8 @@ import { Controller, UseInterceptors } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { RmqInterceptor } from '@app/shared/interceptors/rmq.interceptor';
 import { AuthService } from '../services/auth.service';
-import { AuthCredentialsDto } from '../dto/auth-credentials.dto';
-import { AuthResponseDto } from '../dto/auth-response.dto';
+import { AuthCredentialsDto } from '../dtos/auth-credentials.dto';
+import { AuthResponseDto } from '../dtos/auth-response.dto';
 
 @Controller()
 @UseInterceptors(RmqInterceptor)

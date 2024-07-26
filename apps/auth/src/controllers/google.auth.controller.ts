@@ -7,7 +7,7 @@ import {
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { RmqInterceptor } from '@app/shared/interceptors/rmq.interceptor';
 import { GoogleAuthService } from '../services/google.auth.service';
-import { AuthResponseDto } from '../dto/auth-response.dto';
+import { AuthResponseDto } from '../dtos/auth-response.dto';
 
 @Controller()
 @UseInterceptors(RmqInterceptor)
