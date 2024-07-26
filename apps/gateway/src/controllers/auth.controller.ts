@@ -33,7 +33,7 @@ export class AuthController {
   @ApiOperation({ summary: 'Login' })
   @ApiBody({ type: AuthCredentialsDto, description: 'Login credentials' })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'Login successful.',
     type: AuthResponseDto,
   })
@@ -48,7 +48,7 @@ export class AuthController {
   @ApiOperation({ summary: 'Register' })
   @ApiBody({ type: AuthCredentialsDto, description: 'Registration data' })
   @ApiResponse({
-    status: 201,
+    status: HttpStatus.CREATED,
     description: 'Registration successful.',
     type: AuthResponseDto,
   })
@@ -79,7 +79,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Refresh token' })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'Token refreshed.',
     type: AuthResponseDto,
   })

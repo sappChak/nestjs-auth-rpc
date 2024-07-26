@@ -40,7 +40,7 @@ function setupMiddleware(app: INestApplication) {
 function setupGlobalInterceptors(app: INestApplication) {
   app.useGlobalInterceptors(
     new ClassSerializerInterceptor(app.get(Reflector), {
-      excludeExtraneousValues: true,
+      strategy: 'exposeAll',
     }),
   );
 }

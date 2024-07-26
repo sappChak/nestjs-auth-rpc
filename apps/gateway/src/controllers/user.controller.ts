@@ -9,6 +9,7 @@ import {
   Body,
   Put,
   UseGuards,
+  Delete,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import {
@@ -35,7 +36,7 @@ export class UserController {
   @Get()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get all users' })
-  @ApiResponse({ status: 200, description: 'Users found' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Users found' })
   public async getAllUsers() {
     return this.userClient.send({ cmd: 'get-all-users' }, {});
   }
@@ -43,7 +44,7 @@ export class UserController {
   @Get(':id')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get user by id' })
-  @ApiResponse({ status: 200, description: 'User found' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'User found' })
   public async getUserById(@Param('id') id: string) {
     return this.userClient.send({ cmd: 'get-user-by-id' }, id);
   }
@@ -52,7 +53,10 @@ export class UserController {
   @HttpCode(HttpStatus.CREATED)
   @ApiBody({ type: CreateUserDto })
   @ApiOperation({ summary: 'Create a new user' })
-  @ApiResponse({ status: 201, description: 'User created successfully' })
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    description: 'User created successfully',
+  })
   public async createUser(@Body() user: CreateUserDto) {
     return this.userClient.send({ cmd: 'create-user' }, user);
   }
@@ -61,11 +65,25 @@ export class UserController {
   @HttpCode(HttpStatus.OK)
   @ApiBody({ type: UpdateUserDto })
   @ApiOperation({ summary: 'Update a user' })
-  @ApiResponse({ status: 200, description: 'User updated successfully' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'User updated successfully',
+  })
   public async updateUser(
     @Param('id') id: string,
     @Body() user: UpdateUserDto,
   ) {
     return this.userClient.send({ cmd: 'update-user' }, { id, ...user });
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Delete a user' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'User deleted successfully',
+  })
+  public async deleteUser(@Param('id') id: string) {
+    return this.userClient.send({ cmd: 'delete-user' }, id);
   }
 }
