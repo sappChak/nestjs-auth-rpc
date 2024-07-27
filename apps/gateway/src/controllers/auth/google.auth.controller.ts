@@ -5,13 +5,14 @@ import {
   Query,
   Res,
   HttpStatus,
+  HttpCode,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
 import { firstValueFrom } from 'rxjs';
 import express from 'express';
 import { AUTH_SERVICE } from '@app/shared/constants/constants';
-import { setRefreshTokenCookie } from '../utils/set-cookie.util';
+import { setRefreshTokenCookie } from '../../utils/set-cookie.util';
 
 @ApiTags('Google Auth')
 @Controller()
@@ -21,6 +22,7 @@ export class GoogleAuthController {
   ) { }
 
   @Get('/tokens/oauth/google')
+  @HttpCode(HttpStatus.FOUND)
   @ApiOperation({ summary: 'Google OAuth Callback' })
   @ApiQuery({
     name: 'code',
@@ -36,14 +38,6 @@ export class GoogleAuthController {
   @ApiResponse({
     status: HttpStatus.FOUND,
     description: 'Redirect to client URL',
-  })
-  @ApiResponse({
-    status: HttpStatus.BAD_REQUEST,
-    description: 'Invalid OAuth tokens',
-  })
-  @ApiResponse({
-    status: HttpStatus.UNAUTHORIZED,
-    description: 'Google user not found or invalid credentials',
   })
   public async processWebhook(
     @Query('code') code: string,
