@@ -21,8 +21,8 @@ import {
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '@app/shared/guards/jwt.auth.guard';
 import { USER_SERVICE } from '@app/shared/constants/constants';
-import { CreateUserDto } from '../dtos/create-user.dto';
-import { UpdateUserDto } from '../dtos/update-user.dto';
+import { CreateUserDto } from '../../dtos/create-user.dto';
+import { UpdateUserDto } from '../../dtos/update-user.dto';
 
 @ApiTags('Users')
 @ApiBearerAuth()
