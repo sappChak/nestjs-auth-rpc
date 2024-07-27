@@ -14,11 +14,11 @@ import { ApiTags, ApiResponse, ApiOperation, ApiBody } from '@nestjs/swagger';
 import { Response } from 'express';
 import { firstValueFrom } from 'rxjs';
 import { AUTH_SERVICE } from '@app/shared/constants/constants';
-import { AuthInterceptor } from '../interceptors/auth.interceptor';
-import { AuthCredentialsDto } from '../dtos/auth-credentials.dto';
-import { AuthResponseDto } from '../dtos/auth-response.dto';
-import { ValidateRefreshTokenPipe } from '../pipes/validate-refresh.pipe';
-import { CookieParam } from '../decorators/cookie-param.decorator';
+import { AuthInterceptor } from '../../interceptors/auth.interceptor';
+import { AuthCredentialsDto } from '../../dtos/auth-credentials.dto';
+import { AuthResponseDto } from '../../dtos/auth-response.dto';
+import { ValidateRefreshTokenPipe } from '../../pipes/validate-refresh.pipe';
+import { CookieParam } from '../../decorators/cookie-param.decorator';
 
 @ApiTags('Auth')
 @Controller('auth')
