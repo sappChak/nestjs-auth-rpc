@@ -9,7 +9,15 @@ export class AuthResponseDto {
   @Exclude()
   refreshToken: string;
 
-  @ApiProperty({ example: { id: 1, email: 'example@example.com' } })
+  @ApiProperty({
+    example: {
+      id: 1,
+      name: 'Joe',
+      surname: 'Doe',
+      email: 'example@example.com',
+      profile_picture: 'https://example.com/profile.jpg'
+    },
+  })
   user: {
     id: number;
     name: string;
