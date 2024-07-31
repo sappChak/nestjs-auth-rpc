@@ -10,8 +10,8 @@ services:
     depends_on:
       rabbitmq:
         condition: service_healthy
-      postgres:
-        condition: service_started
+      user-db:
+        condition: service_healthy
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
@@ -27,8 +27,8 @@ services:
     depends_on:
       rabbitmq:
         condition: service_healthy
-      postgres:
-        condition: service_started
+      token-db:
+        condition: service_healthy
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
@@ -75,16 +75,45 @@ services:
       - .:/usr/src/app
       - /usr/src/app/node_modules
 
-  postgres:
+  user-db:
     image: postgres:latest
-    container_name: postgres
+    container_name: user-db
     restart: always
     ports:
       - '5432:5432'
-    env_file:
-      - .psql.dev.env
+    environment:
+      POSTGRES_USER: user_service_user
+      POSTGRES_PASSWORD: user_service_password
+      POSTGRES_DB: user_service_db
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ./docker-entrypoint-initdb.d/user:/docker-entrypoint-initdb.d
+      - user_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U user_service_user -d user_service_db']
+      interval: 10s
+      retries: 5
+      start_period: 20s
+      timeout: 5s
+
+  token-db:
+    image: postgres:latest
+    container_name: token-db
+    restart: always
+    ports:
+      - '5433:5432'
+    environment:
+      POSTGRES_USER: token_service_user
+      POSTGRES_PASSWORD: token_service_password
+      POSTGRES_DB: token_service_db
+    volumes:
+      - ./docker-entrypoint-initdb.d/token:/docker-entrypoint-initdb.d
+      - token_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U token_service_user -d token_service_db']
+      interval: 10s
+      retries: 5
+      start_period: 20s
+      timeout: 5s
 
   pgadmin:
     image: dpage/pgadmin4
@@ -100,8 +129,10 @@ services:
     env_file:
       - .psql.dev.env
     depends_on:
-      postgres:
-        condition: service_started
+      user-db:
+        condition: service_healthy
+      token-db:
+        condition: service_healthy
 
   rabbitmq:
     image: rabbitmq
@@ -119,4 +150,5 @@ networks:
     driver: bridge
 
 volumes:
-  postgres_data: {}
+  user_postgres_data: {}
+  token_postgres_data: {}
