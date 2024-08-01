@@ -6,6 +6,6 @@ import { setupMiddlewares } from './config/middlewares';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(GatewayModule);
   setupMiddlewares(app);
-  await app.listen(3000);
+  await app.listen(8080);
 }
 bootstrap();

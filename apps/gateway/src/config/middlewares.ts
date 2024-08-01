@@ -54,7 +54,7 @@ function setupSwagger(app: INestApplication) {
     .setTitle('Nest-js Swagger Example API')
     .setDescription('Swagger Example API description')
     .setVersion('1.0')
-    .addServer('http://localhost:3000')
+    .addServer('http://localhost:8080')
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, options);
