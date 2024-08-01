@@ -116,24 +116,24 @@ Deployment is containerized using Docker. A Docker Compose file, along with Dock
 └── README.md
 ```
 
-## Roadmap
+### Roadmap
 
-### General
+#### General
 
-- [ ] Create Kubernetes Manifests
-- [ ] Set Up CI/CD Pipeline
-- [x] Seed Databases with Initial Data
-- [ ] Implement Integration Tests
-- [ ] Create and Add Scripts for Build and Test
+- [ ] Develop Kubernetes manifests
+- [ ] Configure CI/CD pipeline
+- [ ] Implement integration tests
+- [x] Pre-populate tables if they don't exist
+- [ ] Create and add build and test scripts
 
-### API Gateway
+#### API Gateway
 
-- [ ] Implement User Authentication
-- [x] Integrate Authorization Mechanisms
-- [ ] Enhance Error Handling
+- [ ] Add user authentication
+- [x] Implement authorization mechanisms
+- [ ] Improve error handling
 
-### Microservices
+#### Microservices
 
-- [ ] Establish Health Checks
-- [ ] Integrate Caching Solutions
-- [ ] Refine Error Handling Mechanisms
+- [ ] Implement health checks
+- [ ] Add caching solutions
+- [ ] Enhance error handling mechanisms
