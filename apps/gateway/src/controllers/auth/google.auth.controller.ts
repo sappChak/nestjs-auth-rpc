@@ -4,8 +4,8 @@ import { ClientProxy } from '@nestjs/microservices';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
 import { Response } from 'express';
-import { setRefreshTokenCookie } from '../../utils/set-cookie.util';
 import { AUTH_SERVICE } from '@app/shared/constants/constants';
+import { setRefreshTokenCookie } from '../../utils/set-cookie.util';
 
 @ApiTags('Google Auth')
 @Controller()
