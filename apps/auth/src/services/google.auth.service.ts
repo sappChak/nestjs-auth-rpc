@@ -1,14 +1,19 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ClientProxy } from '@nestjs/microservices';
 import { HttpService } from '@nestjs/axios';
+import { AxiosResponse } from 'axios';
 import { stringify } from 'qs';
-import { firstValueFrom } from 'rxjs';
-import { TOKEN_SERVICE, USER_SERVICE } from '@app/shared/constants/constants';
+import { firstValueFrom, map } from 'rxjs';
+import bcrypt from 'bcrypt';
 import { AuthResponseDto } from '../dtos/auth-response.dto';
-import { GoogleToken } from '../interfaces/google-token.interface';
 import { GoogleUser } from '../interfaces/google-user.interface';
-import { AuthCredentialsDto } from '../dtos/auth-credentials.dto';
+import { GoogleToken } from '../interfaces/google-token.interface';
+import { AuthService } from './auth.service';
 
 @Injectable()
 export class GoogleAuthService {
@@ -22,52 +27,96 @@ export class GoogleAuthService {
   private readonly googleApiUrl: string;
 
   public constructor(
-    @Inject(USER_SERVICE) private readonly userClient: ClientProxy,
-    @Inject(TOKEN_SERVICE) private readonly tokenClient: ClientProxy,
-    private readonly configService: ConfigService,
+    private readonly authService: AuthService,
     private readonly httpService: HttpService,
+    private readonly configService: ConfigService,
   ) {
     this.googleClientId = this.configService.get<string>('GOOGLE_CLIENT_ID');
     this.googleClientSecret = this.configService.get<string>(
       'GOOGLE_CLIENT_SECRET',
-    );
+    )!;
     this.googleRedirectUri = this.configService.get<string>(
       'GOOGLE_REDIRECT_URI',
-    );
+    )!;
     this.googleTokenUrl = this.configService.get<string>('GOOGLE_TOKEN_URL');
     this.googleGrantType = this.configService.get<string>('GOOGLE_GRANT_TYPE');
     this.googleApiUrl = this.configService.get<string>('GOOGLE_API_URL');
   }
 
-  public async loginGoogleUser(
-    createUserDto: AuthCredentialsDto,
+  public async authenticateWithGoogle(
+    code: string,
+    state: string,
   ): Promise<AuthResponseDto> {
-    const user = await firstValueFrom(
-      this.userClient.send({ cmd: 'create-user' }, createUserDto),
+    const oAuthTokens = await this.fetchGoogleOAuthTokens(code);
+    const googleUser = await this.fetchGoogleUser(
+      oAuthTokens.id_token,
+      oAuthTokens.access_token,
     );
-    return this.authorizeWithGoogle(user);
+    return this.processGoogleUser(googleUser, state);
   }
 
-  public async getGoogleOAuthTokens(code: string) {
+  private async processGoogleUser(
+    googleUser: GoogleUser,
+    state: string,
+  ): Promise<AuthResponseDto> {
+    const hashedPassword = await this.generateRandomPassword();
+
+    const userDto = {
+      role: state,
+      name: googleUser.given_name,
+      surname: googleUser.family_name,
+      email: googleUser.email,
+      profile_picture: googleUser.picture,
+      password: hashedPassword,
+    };
+
+    return this.authService.generateAuthResponse(userDto);
+  }
+
+  private async fetchGoogleOAuthTokens(code: string): Promise<GoogleToken> {
     this.logger.debug(`Fetching Google OAuth Tokens with code: ${code}`);
-
-    const googleResponse = await this.postToUrl<GoogleToken>(
-      this.googleTokenUrl,
-      this.getOAuthValues(code),
+    const response = await firstValueFrom(
+      this.httpService
+        .post<GoogleToken>(
+          this.googleTokenUrl,
+          stringify(this.getOAuthValues(code)),
+        )
+        .pipe(map((response: AxiosResponse<GoogleToken>) => response.data)),
     );
-    return googleResponse;
-  }
 
-  public async getGoogleUser(id_token: string, access_token: string) {
-    const response = await this.getGoogleUserInfo(id_token, access_token);
+    if (!response) {
+      throw new BadRequestException('Failed to fetch OAuth tokens');
+    }
+
+    this.logger.debug(`Received OAuth tokens: ${JSON.stringify(response)}`);
     return response;
   }
 
-  private async authorizeWithGoogle(user: any): Promise<AuthResponseDto> {
-    const { accessToken, refreshToken } = await firstValueFrom(
-      this.tokenClient.send({ cmd: 'generate-tokens' }, user),
+  private async fetchGoogleUser(
+    id_token: string,
+    access_token: string,
+  ): Promise<GoogleUser> {
+    this.logger.debug(
+      `Fetching Google user info with id_token: ${id_token} and access_token: ${access_token}`,
     );
-    return { accessToken, refreshToken, user };
+    const response = await firstValueFrom(
+      this.httpService
+        .get<GoogleUser>(`${this.googleApiUrl}=${access_token}`, {
+          headers: { Authorization: `Bearer ${id_token}` },
+        })
+        .pipe(map((response: AxiosResponse<GoogleUser>) => response.data)),
+    );
+
+    if (!response) {
+      throw new UnauthorizedException('Failed to fetch Google user');
+    }
+
+    return response;
+  }
+
+  private async generateRandomPassword(): Promise<string> {
+    const password = Math.random().toString(36).slice(-8);
+    return bcrypt.hash(password, 10);
   }
 
   private getOAuthValues(code: string) {
@@ -78,18 +127,5 @@ export class GoogleAuthService {
       redirect_uri: this.googleRedirectUri,
       grant_type: this.googleGrantType,
     };
-  }
-
-  private async postToUrl<T>(url: string, values: any) {
-    return this.httpService.post<T>(url, stringify(values));
-  }
-
-  private async getGoogleUserInfo(id_token: string, access_token: string) {
-    return this.httpService.get<GoogleUser>(
-      `${this.googleApiUrl}=${access_token}`,
-      {
-        headers: { Authorization: `Bearer ${id_token}` },
-      },
-    );
   }
 }
