@@ -1,28 +1,25 @@
-import {
-  Controller,
-  Get,
-  Inject,
-  Query,
-  Res,
-  HttpStatus,
-  HttpCode,
-} from '@nestjs/common';
+import { Controller, Get, Inject, Query, Res } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiQuery } from '@nestjs/swagger';
 import { ClientProxy } from '@nestjs/microservices';
-import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
+import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
-import express from 'express';
-import { AUTH_SERVICE } from '@app/shared/constants/constants';
+import { Response } from 'express';
 import { setRefreshTokenCookie } from '../../utils/set-cookie.util';
+import { AUTH_SERVICE } from '@app/shared/constants/constants';
 
 @ApiTags('Google Auth')
 @Controller()
 export class GoogleAuthController {
-  public constructor(
-    @Inject(AUTH_SERVICE) private readonly googleAuthClient: ClientProxy,
-  ) { }
+  private readonly clientUrl: string;
 
-  @Get('/tokens/oauth/google')
-  @HttpCode(HttpStatus.FOUND)
+  public constructor(
+    @Inject(AUTH_SERVICE) private readonly authClient: ClientProxy,
+    private readonly configService: ConfigService,
+  ) {
+    this.clientUrl = this.configService.get('CLIENT_URL');
+  }
+
+  @Get('tokens/oauth/google')
   @ApiOperation({ summary: 'Google OAuth Callback' })
   @ApiQuery({
     name: 'code',
@@ -35,20 +32,15 @@ export class GoogleAuthController {
     description:
       'State parameter to maintain state between the request and callback. Used to store user role.',
   })
-  @ApiResponse({
-    status: HttpStatus.FOUND,
-    description: 'Redirect to client URL',
-  })
-  public async processWebhook(
+  public async handleGoogleAuthCallback(
     @Query('code') code: string,
     @Query('state') state: string,
-    @Res() response: express.Response,
+    @Res() response: Response,
   ) {
     const result = await firstValueFrom(
-      this.googleAuthClient.send({ cmd: 'login-with-google' }, { code, state }),
+      this.authClient.send({ cmd: 'login-with-google' }, { code, state }),
     );
     setRefreshTokenCookie(response, result.refreshToken);
-    const clientUrl = process.env.CLIENT_URL || 'http://localhost:5000';
-    return response.redirect(clientUrl);
+    return response.redirect(this.clientUrl);
   }
 }
