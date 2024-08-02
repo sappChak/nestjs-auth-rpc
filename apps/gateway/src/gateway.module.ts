@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { RmqModule } from '@app/shared/rmq/rmq.module';
 import {
   AUTH_SERVICE,
@@ -27,6 +27,6 @@ import { UserController } from './controllers/user/user.controller';
     }),
   ],
   controllers: [UserController, AuthController, GoogleAuthController],
-  providers: [],
+  providers: [ConfigService],
 })
 export class GatewayModule { }
