@@ -65,7 +65,7 @@ export class AuthService {
     this.tokenClient.emit('refresh-token-revoked', refreshToken);
   }
 
-  private async generateAuthResponse(user: any) {
+  public async generateAuthResponse(user: any): Promise<AuthResponseDto> {
     const { accessToken, refreshToken } = await firstValueFrom(
       this.tokenClient.send({ cmd: 'generate-tokens' }, user),
     );
