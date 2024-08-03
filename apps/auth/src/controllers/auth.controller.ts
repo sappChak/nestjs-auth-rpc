@@ -14,14 +14,14 @@ export class AuthController {
   public async login(
     @Payload() credentials: AuthCredentialsDto,
   ): Promise<AuthResponseDto> {
-    return await this.authService.login(credentials);
+    return this.authService.login(credentials);
   }
 
   @MessagePattern({ cmd: 'register' })
   public async register(
     @Payload() credentials: AuthCredentialsDto,
   ): Promise<AuthResponseDto> {
-    return await this.authService.register(credentials);
+    return this.authService.register(credentials);
   }
 
   @MessagePattern({ cmd: 'logout' })
@@ -36,6 +36,6 @@ export class AuthController {
   public async refresh(
     @Payload() refreshToken: string,
   ): Promise<AuthResponseDto> {
-    return await this.authService.refresh(refreshToken);
+    return this.authService.refresh(refreshToken);
   }
 }

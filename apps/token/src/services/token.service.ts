@@ -54,7 +54,7 @@ export class TokenService implements ITokenService {
     this.logger.debug(
       `Generated refresh token for user with id: ${payload.id}`,
     );
-    return await this.createOrUpdateRefreshToken(payload.id, refreshToken);
+    return this.createOrUpdateRefreshToken(payload.id, refreshToken);
   }
 
   public async deleteRefreshToken(refreshToken: string): Promise<void> {
