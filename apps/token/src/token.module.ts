@@ -23,4 +23,4 @@ import typeormConfig from './config/typeorm';
   controllers: [TokenController],
   providers: [TokenService, JwtService],
 })
-export class TokenModule { }
+export class TokenModule {}

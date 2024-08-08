@@ -8,7 +8,7 @@ import { AuthResponseDto } from '../dtos/auth-response.dto';
 @Controller()
 @UseInterceptors(RmqInterceptor)
 export class AuthController {
-  public constructor(private readonly authService: AuthService) { }
+  public constructor(private readonly authService: AuthService) {}
 
   @MessagePattern({ cmd: 'login' })
   public async login(

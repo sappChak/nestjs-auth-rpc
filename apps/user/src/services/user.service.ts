@@ -9,7 +9,7 @@ import { CreateUserDto } from '../dtos/create-user.dto';
 export class UserService {
   public constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
-  ) { }
+  ) {}
 
   public async getAllUsers(): Promise<User[]> {
     return this.userRepository.find();

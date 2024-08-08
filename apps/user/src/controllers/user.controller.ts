@@ -7,7 +7,7 @@ import { CreateUserDto } from '../dtos/create-user.dto';
 @Controller()
 @UseInterceptors(RmqInterceptor)
 export class UserController {
-  public constructor(private readonly userService: UserService) { }
+  public constructor(private readonly userService: UserService) {}
 
   @MessagePattern({ cmd: 'get-user-by-email' })
   public async getUserByEmail(@Payload() email: string) {

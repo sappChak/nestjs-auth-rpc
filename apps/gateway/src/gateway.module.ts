@@ -29,4 +29,4 @@ import { UserController } from './controllers/user/user.controller';
   controllers: [UserController, AuthController, GoogleAuthController],
   providers: [ConfigService],
 })
-export class GatewayModule { }
+export class GatewayModule {}

@@ -7,7 +7,7 @@ import { AuthResponseDto } from '../dtos/auth-response.dto';
 @Controller()
 @UseInterceptors(RmqInterceptor)
 export class GoogleAuthController {
-  public constructor(private readonly googleAuthService: GoogleAuthService) { }
+  public constructor(private readonly googleAuthService: GoogleAuthService) {}
 
   @MessagePattern({ cmd: 'login-with-google' })
   public async handleLoginWithGoogle(

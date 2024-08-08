@@ -15,7 +15,7 @@ export class AuthResponseDto {
       name: 'Joe',
       surname: 'Doe',
       email: 'example@example.com',
-      profile_picture: 'https://example.com/profile.jpg'
+      profile_picture: 'https://example.com/profile.jpg',
     },
   })
   user: {

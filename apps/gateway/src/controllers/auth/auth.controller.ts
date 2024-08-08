@@ -26,7 +26,7 @@ import { CookieParam } from '../../decorators/cookie-param.decorator';
 export class AuthController {
   public constructor(
     @Inject(AUTH_SERVICE) private readonly authClient: ClientProxy,
-  ) { }
+  ) {}
 
   @Post('login')
   @HttpCode(HttpStatus.OK)

@@ -31,7 +31,7 @@ import { UpdateUserDto } from '../../dtos/update-user.dto';
 export class UserController {
   public constructor(
     @Inject(USER_SERVICE) private readonly userClient: ClientProxy,
-  ) { }
+  ) {}
 
   @Get()
   @HttpCode(HttpStatus.OK)

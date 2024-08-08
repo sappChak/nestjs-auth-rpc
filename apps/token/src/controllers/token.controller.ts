@@ -7,7 +7,7 @@ import { CreateTokenDto } from '../dtos/create-token.dto';
 @Controller()
 @UseInterceptors(RmqInterceptor)
 export class TokenController {
-  public constructor(private readonly tokenService: TokenService) { }
+  public constructor(private readonly tokenService: TokenService) {}
 
   @MessagePattern({ cmd: 'verify-refresh-token' })
   public async handleRefreshTokenVerification(@Payload() token: string) {
@@ -21,7 +21,7 @@ export class TokenController {
 
   @EventPattern('refresh-token-revoked')
   public async handleRefreshTokenRevoking(@Payload() refreshToken: string) {
-    await this.tokenService.deleteRefreshToken(refreshToken);
+    this.tokenService.deleteRefreshToken(refreshToken);
   }
 
   @MessagePattern({ cmd: 'generate-tokens' })

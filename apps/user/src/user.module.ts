@@ -22,4 +22,4 @@ import typeormConfig from './config/typeorm';
   controllers: [UserController],
   providers: [UserService],
 })
-export class UserModule { }
+export class UserModule {}

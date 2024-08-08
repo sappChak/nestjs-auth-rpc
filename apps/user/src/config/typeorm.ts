@@ -18,11 +18,11 @@ const config: TypeOrmModuleOptions = {
   migrations: ['dist/apps/user/migrations/*{.ts,.js}'],
   ssl: isProduction
     ? {
-      rejectUnauthorized: true,
-      ca: fs
-        .readFileSync(path.resolve(__dirname, '../ssl/ca-certificate.crt'))
-        .toString(),
-    }
+        rejectUnauthorized: true,
+        ca: fs
+          .readFileSync(path.resolve(__dirname, '../ssl/ca-certificate.crt'))
+          .toString(),
+      }
     : undefined,
 };
 

@@ -6,4 +6,3 @@ export const CookieParam = createParamDecorator(
     return data ? request.cookies?.[data] : request.cookies;
   },
 );
-
