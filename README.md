@@ -124,7 +124,6 @@ Deployment is containerized using Docker. A Docker Compose file, along with Dock
 - [ ] Configure CI/CD pipeline
 - [ ] Implement integration tests
 - [x] Pre-populate tables if they don't exist
-- [ ] Create and add build and test scripts
 
 #### API Gateway
 
