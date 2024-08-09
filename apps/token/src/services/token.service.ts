@@ -83,7 +83,9 @@ export class TokenService implements ITokenService {
   ): Promise<CreateTokenDto> {
     const storedToken = await this.findRefreshToken(refreshToken);
 
-    if (!storedToken) throw new BadRequestException('Token not found');
+    if (!storedToken) {
+      throw new BadRequestException('Token not found');
+    }
 
     const payload = this.jwtService.verify(
       refreshToken,
