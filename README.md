@@ -105,27 +105,4 @@ Deployment is containerized using Docker. A Docker Compose file, along with Dock
 │   │   └── README.md
 ├── docker-compose.yml
 └── README.md
-
-
 ```
-
-### Roadmap
-
-#### General
-
-- [ ] Develop Kubernetes manifests
-- [ ] Configure CI/CD pipeline
-- [ ] Implement integration tests
-- [x] Pre-populate tables if they don't exist
-
-#### API Gateway
-
-- [ ] Add user authentication
-- [x] Implement authorization mechanisms
-- [ ] Improve error handling
-
-#### Microservices
-
-- [ ] Implement health checks
-- [ ] Add caching solutions
-- [ ] Enhance error handling mechanisms
