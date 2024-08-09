@@ -1,7 +1,6 @@
 import {
   Controller,
   Get,
-  HttpCode,
   HttpStatus,
   Inject,
   Param,
@@ -34,7 +33,6 @@ export class UserController {
   ) {}
 
   @Get()
-  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get all users' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Users found' })
   public async getAllUsers() {
@@ -42,7 +40,6 @@ export class UserController {
   }
 
   @Get(':id')
-  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get user by id' })
   @ApiResponse({ status: HttpStatus.OK, description: 'User found' })
   public async getUserById(@Param('id') id: string) {
@@ -50,7 +47,6 @@ export class UserController {
   }
 
   @Post()
-  @HttpCode(HttpStatus.CREATED)
   @ApiBody({ type: CreateUserDto })
   @ApiOperation({ summary: 'Create a new user' })
   @ApiResponse({
@@ -62,7 +58,6 @@ export class UserController {
   }
 
   @Put(':id')
-  @HttpCode(HttpStatus.OK)
   @ApiBody({ type: UpdateUserDto })
   @ApiOperation({ summary: 'Update a user' })
   @ApiResponse({
@@ -77,7 +72,6 @@ export class UserController {
   }
 
   @Delete(':id')
-  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Delete a user' })
   @ApiResponse({
     status: HttpStatus.OK,
