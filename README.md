@@ -93,15 +93,6 @@ Deployment is containerized using Docker. A Docker Compose file, along with Dock
 │   │   ├── test
 │   │   ├── Dockerfile
 │   │   └── README.md
-│   ├── auth
-│   │   ├── src
-│   │   │   ├── controllers
-│   │   │   ├── services
-│   │   │   ├── modules
-│   │   │   └── main.ts
-│   │   ├── test
-│   │   ├── Dockerfile
-│   │   └── README.md
 ├── libs
 │   ├── shared
 │   │   ├── src
@@ -114,6 +105,8 @@ Deployment is containerized using Docker. A Docker Compose file, along with Dock
 │   │   └── README.md
 ├── docker-compose.yml
 └── README.md
+
+
 ```
 
 ### Roadmap
