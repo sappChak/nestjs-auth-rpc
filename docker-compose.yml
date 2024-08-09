@@ -5,6 +5,7 @@ services:
       context: .
       target: development
     command: npm run start:dev user
+    restart: always
     env_file:
       - ./apps/user/.development.env
     depends_on:
@@ -22,6 +23,7 @@ services:
       context: .
       target: development
     command: npm run start:dev token
+    restart: always
     env_file:
       - ./apps/token/.development.env
     depends_on:
@@ -33,31 +35,13 @@ services:
       - .:/usr/src/app
       - /usr/src/app/node_modules
 
-  auth:
-    build:
-      context: .
-      dockerfile: ./apps/auth/Dockerfile
-      target: development
-    command: npm run start:dev auth
-    env_file:
-      - ./apps/auth/.development.env
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
-      user:
-        condition: service_started
-      token:
-        condition: service_started
-    volumes:
-      - .:/usr/src/app
-      - /usr/src/app/node_modules
-
   gateway:
     build:
       context: .
       dockerfile: ./apps/gateway/Dockerfile
       target: development
     command: npm run start:dev gateway
+    restart: always
     env_file:
       - ./apps/gateway/.development.env
     depends_on:
@@ -66,8 +50,6 @@ services:
       user:
         condition: service_started
       token:
-        condition: service_started
-      auth:
         condition: service_started
     ports:
       - '8080:8080'
