@@ -1,11 +1,9 @@
-import { Controller, Get, Inject, Query, Res } from '@nestjs/common';
+import { Controller, Get, Query, Res } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiQuery } from '@nestjs/swagger';
-import { ClientProxy } from '@nestjs/microservices';
 import { ConfigService } from '@nestjs/config';
-import { firstValueFrom } from 'rxjs';
 import { Response } from 'express';
-import { AUTH_SERVICE } from '@app/shared/constants/constants';
 import { setRefreshTokenCookie } from '../../utils/set-cookie.util';
+import { GoogleAuthService } from '../../services/google.auth.service';
 
 @ApiTags('Google Auth')
 @Controller()
@@ -13,7 +11,7 @@ export class GoogleAuthController {
   private readonly clientUrl: string;
 
   public constructor(
-    @Inject(AUTH_SERVICE) private readonly authClient: ClientProxy,
+    private readonly googleAuthService: GoogleAuthService,
     private readonly configService: ConfigService,
   ) {
     this.clientUrl = this.configService.get('CLIENT_URL');
@@ -37,8 +35,9 @@ export class GoogleAuthController {
     @Query('state') state: string,
     @Res() response: Response,
   ) {
-    const result = await firstValueFrom(
-      this.authClient.send({ cmd: 'login-with-google' }, { code, state }),
+    const result = await this.googleAuthService.authenticateWithGoogle(
+      code,
+      state,
     );
     setRefreshTokenCookie(response, result.refreshToken);
     return response.redirect(this.clientUrl);

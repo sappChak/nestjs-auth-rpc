@@ -6,26 +6,21 @@ import {
   Body,
   Res,
   UseInterceptors,
-  Inject,
 } from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
 import { ApiTags, ApiResponse, ApiOperation, ApiBody } from '@nestjs/swagger';
 import { Response } from 'express';
-import { firstValueFrom } from 'rxjs';
-import { AUTH_SERVICE } from '@app/shared/constants/constants';
 import { AuthInterceptor } from '../../interceptors/auth.interceptor';
 import { AuthCredentialsDto } from '../../dtos/auth-credentials.dto';
 import { AuthResponseDto } from '../../dtos/auth-response.dto';
 import { ValidateRefreshTokenPipe } from '../../pipes/validate-refresh.pipe';
 import { CookieParam } from '../../decorators/cookie-param.decorator';
+import { AuthService } from '../../services/auth.service';
 
 @ApiTags('Auth')
 @Controller('auth')
 @UseInterceptors(AuthInterceptor)
 export class AuthController {
-  public constructor(
-    @Inject(AUTH_SERVICE) private readonly authClient: ClientProxy,
-  ) {}
+  public constructor(private readonly authService: AuthService) {}
 
   @Post('login')
   @ApiOperation({ summary: 'Login' })
@@ -38,7 +33,7 @@ export class AuthController {
   public async login(
     @Body() credentials: AuthCredentialsDto,
   ): Promise<AuthResponseDto> {
-    return firstValueFrom(this.authClient.send({ cmd: 'login' }, credentials));
+    return this.authService.login(credentials);
   }
 
   @Post('register')
@@ -52,9 +47,7 @@ export class AuthController {
   public async register(
     @Body() credentials: AuthCredentialsDto,
   ): Promise<AuthResponseDto> {
-    return firstValueFrom(
-      this.authClient.send({ cmd: 'register' }, credentials),
-    );
+    return this.authService.register(credentials);
   }
 
   @Post('logout')
@@ -64,11 +57,9 @@ export class AuthController {
     @CookieParam('refreshToken', new ValidateRefreshTokenPipe())
     refreshToken: string,
   ): Promise<{ message: string }> {
-    const message = await firstValueFrom(
-      this.authClient.send({ cmd: 'logout' }, refreshToken),
-    );
+    await this.authService.logout(refreshToken);
     response.clearCookie('refreshToken');
-    return message;
+    return { message: 'xui' };
   }
 
   @Get('refresh')
@@ -82,8 +73,6 @@ export class AuthController {
     @CookieParam('refreshToken', new ValidateRefreshTokenPipe())
     refreshToken: string,
   ): Promise<AuthResponseDto> {
-    return firstValueFrom(
-      this.authClient.send({ cmd: 'refresh' }, refreshToken),
-    );
+    return this.authService.refresh(refreshToken);
   }
 }
